@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryDark">#0059ff</color>
+    <color name="colornodata">#d6d6d6</color>
+    <color name="colortoolbar">#72c2ff</color>
+    <color name="colormenu_name">#0565B8</color>
+    <color name="colormenu_copyright">#347EB7</color>
+    <color name="colormenu_btn">#96C4DE</color>
+    <color name="colortouch_btn">#ff9191</color>
+    <color name="colorBackground">#ffffff</color>
+    <color name="colorDialog">#777777</color>
+    <color name="Dialogtitle">#0D4498</color>
+    <color name="buttonbackground">#d6d6d6</color>
+    <color name="spinnerstyle">#999999</color>
+    <color name="textcolor">#000000</color>
+    <color name="textbackgroundcolor">#86d6ff</color>
+    <color name="graycolor">#adadad</color>
+    <color name="temperature_background">#FFE6D9</color>
+    <color name="temperature_frame">#FF5809</color>
+    <color name="humidity_frame">#126FB9</color>
+    <color name="humidity_background">#ECFAFF</color>
+    <color name="pressure_frame">#AC32AB</color>
+    <color name="pressure_background">#F7E9FC</color>
+    <color name="co2_frame">#EDBE0F</color>
+    <color name="co2_background">#F9FEC6</color>
+    <color name="co_frame">#31AC40</color>
+    <color name="co_background">#E6FFE8</color>
+    <color name="pm_background">#D4FFFF</color>
+    <color name="pm_frame">#00A8A8</color>
+</resources>
