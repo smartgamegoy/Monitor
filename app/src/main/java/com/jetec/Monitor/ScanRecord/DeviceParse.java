@@ -171,6 +171,9 @@ public class DeviceParse {
                             }
                         }
                         else {
+                            String count = getuuid.substring(0, 2);
+                            getuuid = getuuid.substring(4);
+
                             logMessage.showmessage(TAG,"燈泡開關");
                         }
                     }

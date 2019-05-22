@@ -124,6 +124,8 @@ public class FirstActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
+
+
         no_device = findViewById(R.id.no_data);
         scrollView = findViewById(R.id.scrollView);
         linearLayout = findViewById(R.id.linearlayout);

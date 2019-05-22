@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single"
+        android:background="@drawable/side_nav_bar">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/dashboard"
+            android:title="@string/bar_dashboard" />
+        <item
+            android:id="@+id/nav_hardware"
+            android:icon="@drawable/hardware_infomanation"
+            android:title="@string/bar_hardware" />
+        <!--<item-->
+            <!--android:id="@+id/nav_alert"-->
+            <!--android:icon="@drawable/alert"-->
+            <!--android:title="@string/bar_alert" />-->
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/logout"
+            android:title="@string/bar_logout" />
+    </group>
+
+    <item
+        android:id="@+id/url_phonecall"
+        android:icon="@drawable/phonecall"
+        android:title="@string/bar_phonecall" />
+</menu>
