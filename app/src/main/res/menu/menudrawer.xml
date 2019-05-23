@@ -3,28 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single"
-        android:background="@drawable/side_nav_bar">
+    <group
+        android:background="@drawable/side_nav_bar"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_dashboard"
-            android:icon="@drawable/dashboard"
-            android:title="@string/bar_dashboard" />
+            android:id="@+id/sensors"
+            android:icon="@drawable/sensors"
+            android:title="@string/sensor" />
         <item
-            android:id="@+id/nav_hardware"
-            android:icon="@drawable/hardware_infomanation"
-            android:title="@string/bar_hardware" />
-        <!--<item-->
-            <!--android:id="@+id/nav_alert"-->
-            <!--android:icon="@drawable/alert"-->
-            <!--android:title="@string/bar_alert" />-->
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/logout"
-            android:title="@string/bar_logout" />
+            android:id="@+id/switchs"
+            android:icon="@drawable/switchs"
+            android:title="@string/switchs" />
     </group>
 
-    <item
-        android:id="@+id/url_phonecall"
-        android:icon="@drawable/phonecall"
-        android:title="@string/bar_phonecall" />
+    <group
+        android:id="@+id/nav_commnunicate"
+        android:title="">
+        <item
+            android:id="@+id/url_phonecall"
+            android:icon="@drawable/phonecall"
+            android:title="@string/bar_phonecall" />
+    </group>
 </menu>

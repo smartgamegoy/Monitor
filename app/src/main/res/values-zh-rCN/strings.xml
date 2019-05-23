@@ -1,4 +1,6 @@
 <resources>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="app_name">Monitor</string>
     <string name="menu_name">JTC-MX-WL</string>
     <string name="menu_btn">搜索装置</string>
@@ -89,4 +91,8 @@
     <string name="max">不可低于下限</string>
     <string name="min">不可高于上限</string>
     <string name="none">无</string>
+    <string name="sensor">感测器</string>
+    <string name="switchs">开关</string>
+    <string name="bar_phonecall">线上咨询</string>
+    <string name="power">电量 :</string>
 </resources>

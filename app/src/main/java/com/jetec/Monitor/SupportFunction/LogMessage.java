@@ -11,4 +11,8 @@ public class LogMessage {
     public void showmessage(String TAG, String str){
         Log.d(TAG,str);
     }
+
+    public void showerror(String TAG, String str){
+        Log.e(TAG,str);
+    }
 }

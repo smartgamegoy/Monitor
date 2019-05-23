@@ -12,12 +12,18 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -40,9 +46,10 @@ import com.jetec.Monitor.ScanRecord.DeviceParse;
 import com.jetec.Monitor.SupportFunction.*;
 import com.jetec.Monitor.Service.BluetoothLeService;
 import com.jetec.Monitor.SupportFunction.SQL.AlertRecord;
+import com.jetec.Monitor.SwitchWL.SwitchActivity;
 import com.jetec.Monitor.Thread.*;
 import org.json.JSONArray;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +60,7 @@ import java.util.Map;
 import java.util.Objects;
 import static java.lang.Thread.sleep;
 
-public class FirstActivity extends AppCompatActivity {
+public class FirstActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private String TAG = "FirstActivity";
     private TimeCheck timeCheck = new TimeCheck();
@@ -83,7 +90,7 @@ public class FirstActivity extends AppCompatActivity {
     private AlertRecord alertRecord;
     private LinearLayout linearLayout, linearLayout1, linearLayout2, linearLayout3,
             linearLayout4, linearLayout5, linearLayout6;
-    private TextView text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11, text12;
+    private TextView text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11, text12, text13;
     private LogMessage logMessage = new LogMessage();
     private ArrayList<String> dataList, selectItem, reList;
     private final String[] T = {"EH", "EL"};
@@ -124,7 +131,16 @@ public class FirstActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, myToolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().findItem(R.id.sensors).setEnabled(false);
 
         no_device = findViewById(R.id.no_data);
         scrollView = findViewById(R.id.scrollView);
@@ -236,6 +252,7 @@ public class FirstActivity extends AppCompatActivity {
         mBluetoothLeService.disconnect();
     }
 
+    @SuppressLint("SetTextI18n")
     private void set_View(Map<Integer, List<String>> get_record) {
         boolean checklist = true;
 
@@ -291,6 +308,7 @@ public class FirstActivity extends AppCompatActivity {
                 text10 = view.findViewById(R.id.textView10);
                 text11 = view.findViewById(R.id.textView11);
                 text12 = view.findViewById(R.id.textView12);
+                text13 = view.findViewById(R.id.textView13);   //power
 
                 linearLayout1.setVisibility(View.GONE);
                 linearLayout2.setVisibility(View.GONE);
@@ -311,13 +329,25 @@ public class FirstActivity extends AppCompatActivity {
                 text11.setVisibility(View.GONE);
                 text12.setVisibility(View.GONE);
 
+
                 int k = 1;
                 list = get_record.get(i);
 
                 assert list != null;
                 textView.setText(list.get(0));
                 textView2.setText(list.get(1));
-                String a = list.get(2);
+                int power = Integer.valueOf(list.get(2));
+                Log.e(TAG, "power = " + power);
+                if(power > 100){
+                    text13.setText(getString(R.string.power) + "100%");
+                }
+                else if(power < 0){
+                    text13.setText("");
+                }
+                else {
+                    text13.setText(getString(R.string.power) + power + "%");
+                }
+                String a = list.get(3);
                 list = list.subList(list.indexOf(a) + 1, list.size());
                 for (int j = 0; j < list.size(); j = j + 4) {
                     logMessage.showmessage(TAG, "k = " + k);
@@ -402,7 +432,18 @@ public class FirstActivity extends AppCompatActivity {
                     int k = 1;
                     list = get_record.get(i);
                     assert list != null;
-                    String a = list.get(2);
+                    int power = Integer.valueOf(list.get(2));
+                    Log.e(TAG, "list = " + list);
+                    if(power > 100){
+                        text13.setText(getString(R.string.power) + "100%");
+                    }
+                    else if(power < 0){
+                        text13.setText("");
+                    }
+                    else {
+                        text13.setText(getString(R.string.power) + power + "%");
+                    }
+                    String a = list.get(3);
                     list = list.subList(list.indexOf(a) + 1, list.size());
                     for (int j = 0; j < list.size(); j = j + 4) {
                         setValue(k, list.get(j + 3), list.get(j + 1));
@@ -495,124 +536,120 @@ public class FirstActivity extends AppCompatActivity {
                 }
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 runOnUiThread(() -> {
-                    try {
-                        txValue = intents.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
-                        text = new String(txValue, "UTF-8");
-                        logMessage.showmessage(TAG, "text = " + text);
-                        if (text.startsWith("OK")) {
-                            dataList.clear();
-                            selectItem.clear();
-                            reList.clear();
-                        } else if (text.startsWith("BT")) {
-                            String model = text;
-                            Value.device = text;
-                            String[] arr = model.split("-");
-                            String num = arr[1];
-                            String name = arr[2];
-                            String relay = arr[3];
-                            Value.model_num = Integer.valueOf(num);
-                            Value.model_name = name;
-                            Value.model_relay = Integer.valueOf(relay);
-                            selectItem.add("NAME");
-                            logMessage.showmessage(TAG, "model_num = " + Value.model_num);
-                            logMessage.showmessage(TAG, "model_name = " + Value.model_name);
-                            logMessage.showmessage(TAG, "model_relay = " + Value.model_relay);
-                            ArrayList<String> newList = new ArrayList<>();
-                            newList.clear();
-                            for (int i = 0; i < name.length(); i++) {
-                                if (name.charAt(i) == 'T') {
-                                    for (String aT : T) {
-                                        String str = aT + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'H') {
-                                    for (String aH : H) {
-                                        String str = aH + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'C') {
-                                    for (String aC : C) {
-                                        String str = aC + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'D') {
-                                    for (String aD : D) {
-                                        String str = aD + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'E') {
-                                    for (String aE : E) {
-                                        String str = aE + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'P') {
-                                    for (String aP : P) {
-                                        String str = aP + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'M') {
-                                    for (String aM : M) {
-                                        String str = aM + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'Z') {
-                                    for (String aZ : Z) {
-                                        String str = aZ + (i + 1);
-                                        newList.add(str);
-                                    }
-                                } else if (name.charAt(i) == 'W') {
-                                    for (String aW : W) {
-                                        String str = aW + (i + 1);
-                                        newList.add(str);
-                                    }
+                    txValue = intents.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
+                    text = new String(txValue, StandardCharsets.UTF_8);
+                    logMessage.showmessage(TAG, "text = " + text);
+                    if (text.startsWith("OK")) {
+                        dataList.clear();
+                        selectItem.clear();
+                        reList.clear();
+                    } else if (text.startsWith("BT")) {
+                        String model = text;
+                        Value.device = text;
+                        String[] arr = model.split("-");
+                        String num = arr[1];
+                        String name = arr[2];
+                        String relay = arr[3];
+                        Value.model_num = Integer.valueOf(num);
+                        Value.model_name = name;
+                        Value.model_relay = Integer.valueOf(relay);
+                        selectItem.add("NAME");
+                        logMessage.showmessage(TAG, "model_num = " + Value.model_num);
+                        logMessage.showmessage(TAG, "model_name = " + Value.model_name);
+                        logMessage.showmessage(TAG, "model_relay = " + Value.model_relay);
+                        ArrayList<String> newList = new ArrayList<>();
+                        newList.clear();
+                        for (int i = 0; i < name.length(); i++) {
+                            if (name.charAt(i) == 'T') {
+                                for (String aT : T) {
+                                    String str = aT + (i + 1);
+                                    newList.add(str);
                                 }
-                                /*else if(name.charAt(i) == 'I'){
-                                    for(int j = 0; j < I.length; j++){
-                                        String str = I[j] + (i + 1);
-                                        newList.add(str);
-                                    }
+                            } else if (name.charAt(i) == 'H') {
+                                for (String aH : H) {
+                                    String str = aH + (i + 1);
+                                    newList.add(str);
                                 }
-                                else if(name.charAt(i) == 'L'){
-                                    newList.addAll(Arrays.asList(L));
-                                }*/
+                            } else if (name.charAt(i) == 'C') {
+                                for (String aC : C) {
+                                    String str = aC + (i + 1);
+                                    newList.add(str);
+                                }
+                            } else if (name.charAt(i) == 'D') {
+                                for (String aD : D) {
+                                    String str = aD + (i + 1);
+                                    newList.add(str);
+                                }
+                            } else if (name.charAt(i) == 'E') {
+                                for (String aE : E) {
+                                    String str = aE + (i + 1);
+                                    newList.add(str);
+                                }
+                            } else if (name.charAt(i) == 'P') {
+                                for (String aP : P) {
+                                    String str = aP + (i + 1);
+                                    newList.add(str);
+                                }
+                            } else if (name.charAt(i) == 'M') {
+                                for (String aM : M) {
+                                    String str = aM + (i + 1);
+                                    newList.add(str);
+                                }
+                            } else if (name.charAt(i) == 'Z') {
+                                for (String aZ : Z) {
+                                    String str = aZ + (i + 1);
+                                    newList.add(str);
+                                }
+                            } else if (name.charAt(i) == 'W') {
+                                for (String aW : W) {
+                                    String str = aW + (i + 1);
+                                    newList.add(str);
+                                }
                             }
-                            for (int j = 0; j < Value.model_relay; j++) {
-                                String r = "RL" + (j + 1);
-                                newList.add(r);
-                            }
-                            newList.addAll(Arrays.asList(SP));
-                            Value.modelList = newList;
-                            logMessage.showmessage(TAG, "modelList = " + Value.modelList);
-                            sendValue = new SendValue(mBluetoothLeService);
-                            Value.connected = true;
-                            sendValue.send("get");
-                        } else if (text.matches("OVER")) {
-                            logMessage.showmessage(TAG, "selectItem = " + selectItem);
-                            logMessage.showmessage(TAG, "reList = " + reList);
-                            logMessage.showmessage(TAG, "dataList = " + dataList);
-                            if (Value.modelList.size() == reList.size() && Value.modelList.size() == dataList.size()) {
-                                if (engineer) {
-                                    checkpassword();
-                                } else {
-                                    device_function();
+                            /*else if(name.charAt(i) == 'I'){
+                                for(int j = 0; j < I.length; j++){
+                                    String str = I[j] + (i + 1);
+                                    newList.add(str);
                                 }
+                            }
+                            else if(name.charAt(i) == 'L'){
+                                newList.addAll(Arrays.asList(L));
+                            }*/
+                        }
+                        for (int j = 0; j < Value.model_relay; j++) {
+                            String r = "RL" + (j + 1);
+                            newList.add(r);
+                        }
+                        newList.addAll(Arrays.asList(SP));
+                        Value.modelList = newList;
+                        logMessage.showmessage(TAG, "modelList = " + Value.modelList);
+                        sendValue = new SendValue(mBluetoothLeService);
+                        Value.connected = true;
+                        sendValue.send("get");
+                    } else if (text.matches("OVER")) {
+                        logMessage.showmessage(TAG, "selectItem = " + selectItem);
+                        logMessage.showmessage(TAG, "reList = " + reList);
+                        logMessage.showmessage(TAG, "dataList = " + dataList);
+                        if (Value.modelList.size() == reList.size() && Value.modelList.size() == dataList.size()) {
+                            if (engineer) {
+                                checkpassword();
                             } else {
-                                selectItem.clear();
-                                reList.clear();
-                                dataList.clear();
-                                sendValue = new SendValue(mBluetoothLeService);
-                                sendValue.send("get");
+                                device_function();
                             }
                         } else {
-                            if (text.startsWith("EH") || text.startsWith("EL") || text.startsWith("RL") ||
-                                    text.startsWith("ADR") || text.startsWith("SPK") || text.startsWith("PR")) {
-                                selectItem.add(checkDeviceName.setName(text));
-                                reList.add(text);
-                                dataList.add(checkDeviceNum.get(text));
-                            }
+                            selectItem.clear();
+                            reList.clear();
+                            dataList.clear();
+                            sendValue = new SendValue(mBluetoothLeService);
+                            sendValue.send("get");
                         }
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                    } else {
+                        if (text.startsWith("EH") || text.startsWith("EL") || text.startsWith("RL") ||
+                                text.startsWith("ADR") || text.startsWith("SPK") || text.startsWith("PR")) {
+                            selectItem.add(checkDeviceName.setName(text));
+                            reList.add(text);
+                            dataList.add(checkDeviceNum.get(text));
+                        }
                     }
                 });
             }
@@ -1169,7 +1206,7 @@ public class FirstActivity extends AppCompatActivity {
         Date date = new Date();
         String time = get_time.format(date);
 
-        String a = list.get(2);
+        String a = list.get(3);
         list = list.subList(list.indexOf(a) + 1, list.size());
 
         data_record.addAll(list);
@@ -1227,6 +1264,12 @@ public class FirstActivity extends AppCompatActivity {
 
     private void recordlist() {
         Intent intent = new Intent(this, RecordActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void switchact(){
+        Intent intent = new Intent(this, SwitchActivity.class);
         startActivity(intent);
         finish();
     }
@@ -1333,5 +1376,37 @@ public class FirstActivity extends AppCompatActivity {
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             // port do nothing is ok
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.sensors) {
+            vibrator.vibrate(100);
+        } else if (id == R.id.switchs) {
+            vibrator.vibrate(100);
+            switchact();
+        } else if (id == R.id.url_phonecall) {
+            vibrator.vibrate(100);
+            Uri uri = Uri.parse("http://www.jetec.com.tw/wicloud/support.html");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

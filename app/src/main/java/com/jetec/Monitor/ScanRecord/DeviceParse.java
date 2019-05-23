@@ -82,99 +82,104 @@ public class DeviceParse {
                     if (parse.containsKey(EBLE_128BitUUIDCom)) {
                         String getuuid = parse.get(EBLE_128BitUUIDCom);
                         assert getuuid != null;
+                        String temp = getuuid.substring(getuuid.length() - 4);
+                        String power = String.valueOf(parase.byteToRealInt(parase.hex2Byte(getuuid.substring(getuuid.length() - 4))));
+                        logMessage.showmessage(TAG, "temp = " + temp);
+                        logMessage.showmessage(TAG, "power = " + power);
+                        list.add(power);
                         String type = getuuid.substring(2, 4);
                         if(type.matches("00")) {
                             String count = getuuid.substring(0, 2);
                             getuuid = getuuid.substring(4);
                             list.add(count);
                             int quantity = Integer.valueOf(count);
-                            for (int j = 0, m = 0; m < quantity; j = j + 2, m++) {
-                                String unit;
-                                String num;
-                                String overflow;
-                                String value;
-                                if (j == 0) {
-                                    unit = getunit(getuuid.substring(j, j + 2));
-                                    list.add(setflag(unit));
-                                    num = getuuid.substring(j + 2, j + 4);
-                                    value = tmpString.substring(k, k + 4);
-                                    overflow = tmpString.substring(k + 4, k + 8);
-                                    k++;
-                                } else {
-                                    unit = getunit(getuuid.substring(2 * j, 2 * j + 2));
-                                    //logMessage.showmessage(TAG,"unit = " + unit);
-                                    list.add(setflag(unit));
-                                    num = getuuid.substring(2 * j + 2, 2 * j + 4);
-                                    value = tmpString.substring(8 * k, 8 * k + 4);
-                                    overflow = tmpString.substring(8 * k + 4, 8 * k + 8);
-                                    k++;
+                            if(tmpString.length() == (8 * quantity)) {
+                                for (int j = 0, m = 0; m < quantity; j = j + 2, m++) {
+                                    String unit;
+                                    String num;
+                                    String overflow;
+                                    String value;
+                                    if (j == 0) {
+                                        unit = getunit(getuuid.substring(j, j + 2));
+                                        list.add(setflag(unit));
+                                        num = getuuid.substring(j + 2, j + 4);
+                                        value = tmpString.substring(k, k + 4);
+                                        overflow = tmpString.substring(k + 4, k + 8);
+                                        k++;
+                                    } else {
+                                        unit = getunit(getuuid.substring(2 * j, 2 * j + 2));
+                                        //logMessage.showmessage(TAG,"unit = " + unit);
+                                        list.add(setflag(unit));
+                                        num = getuuid.substring(2 * j + 2, 2 * j + 4);
+                                        value = tmpString.substring(8 * k, 8 * k + 4);
+                                        overflow = tmpString.substring(8 * k + 4, 8 * k + 8);
+                                        k++;
+                                    }
+                                    double p = Math.pow(10, Integer.valueOf(num));
+                                    int n = Integer.parseInt(value, 16);
+                                    double cal = n / p;
+                                    DecimalFormat decimalFormat = new DecimalFormat("#.#########");
+                                    String showtext = decimalFormat.format(cal) + unit;
+                                    int o = Integer.parseInt(overflow, 16);
+                                    double over = o / 10;
+                                    String showover = decimalFormat.format(over) + unit;
+                                    list.add(showtext);
+                                    list.add(showover);
+                                    if (cal >= over) {
+                                        list.add("true");
+                                    } else {
+                                        list.add("false");
+                                    }
                                 }
-                                double p = Math.pow(10, Integer.valueOf(num));
-                                int n = Integer.parseInt(value, 16);
-                                double cal = n / p;
-                                DecimalFormat decimalFormat = new DecimalFormat("#.#########");
-                                String showtext = decimalFormat.format(cal) + unit;
-                                int o = Integer.parseInt(overflow, 16);
-                                double over = o / 10;
-                                String showover = decimalFormat.format(over) + unit;
-                                list.add(showtext);
-                                list.add(showover);
-                                if (cal >= over) {
-                                    list.add("true");
+
+                                if (newList.size() == 0) {
+                                    key = 0;
+                                    newList.put(key, list);
+                                    if (checkdevice.size() != 0) {
+                                        checkdevice.put(key, 0);
+                                    } else {
+                                        checkdevice.put(0, 0);
+                                    }
+                                    key++;
                                 } else {
-                                    list.add("false");
-                                }
-                            }
-                            if (newList.size() == 0) {
-                                key = 0;
-                                newList.put(key, list);
-                                if (checkdevice.size() != 0) {
-                                    checkdevice.put(key, 0);
-                                } else {
-                                    checkdevice.put(0, 0);
-                                }
-                                key++;
-                            } else {
-                                Boolean check = false;
-                                for (int n = 0; n < devices.size(); n++) {
-                                    if (newList.get(n) != null && devices.get(i).getName() != null) {
-                                        if (!Objects.requireNonNull(newList.get(n)).get(1).matches(devices.get(i).getAddress())) {
+                                    Boolean check = false;
+                                    for (int n = 0; n < devices.size(); n++) {
+                                        if (newList.get(n) != null && devices.get(i).getName() != null) {
+                                            if (!Objects.requireNonNull(newList.get(n)).get(1).matches(devices.get(i).getAddress())) {
 //                                        newList.put(key, list);
 //                                        key++;
-                                            check = true;
+                                                check = true;
+                                            }
                                         }
-                                    }
 //                                else {
 //                                    newList.put(n, list);
 //                                    key++;
 //                                }
-                                    //newList.put(key, list);
+                                        //newList.put(key, list);
 
 //                                if(newList.get(n) != null && devices.get(i).getName() != null) {
 //                                    if (!Objects.requireNonNull(newList.get(n)).get(0).matches(devices.get(i).getName())) {
 //                                        check = true;
 //                                    }
 //                                }
-                                }
-                                if (check) {
-                                    newList.put(key, list);
-                                    key++;
-                                } else {
-                                    for (int n = 0; n < key; n++) {
-                                        if (newList.get(n) != null && devices.get(i).getName() != null) {
-                                            if (Objects.requireNonNull(newList.get(n)).get(0).matches(devices.get(i).getName())) {
-                                                newList.put(n, list);
+                                    }
+                                    if (check) {
+                                        newList.put(key, list);
+                                        key++;
+                                    } else {
+                                        for (int n = 0; n < key; n++) {
+                                            if (newList.get(n) != null && devices.get(i).getName() != null) {
+                                                if (Objects.requireNonNull(newList.get(n)).get(0).matches(devices.get(i).getName())) {
+                                                    newList.put(n, list);
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                        else {
-                            String count = getuuid.substring(0, 2);
-                            getuuid = getuuid.substring(4);
-
-                            logMessage.showmessage(TAG,"燈泡開關");
+                            else {
+                                logMessage.showmessage(TAG,"格式錯誤");
+                            }
                         }
                     }
                 }

@@ -39,6 +39,13 @@
             tools:ignore="InnerclassSeparator">
         </activity>
         <activity
+            android:name="com.jetec.Monitor.SwitchWL.SwitchActivity"
+            android:theme="@style/nordic_use"
+            android:screenOrientation="user"
+            android:configChanges="orientation|keyboardHidden"
+            tools:ignore="InnerclassSeparator">
+        </activity>
+        <activity
             android:name="com.jetec.Monitor.Activity.RecordActivity"
             android:theme="@style/nordic_use"
             android:screenOrientation="user"

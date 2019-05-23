@@ -3,6 +3,7 @@ package com.jetec.Monitor.SupportFunction;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.jetec.Monitor.R;
+
+import java.util.Objects;
 
 public class RunningFlash {
 
@@ -38,34 +41,31 @@ public class RunningFlash {
     private Dialog showDialog(Context context, String message){
         Dialog progressDialog = new Dialog(context);
         progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Objects.requireNonNull(progressDialog.getWindow()).setBackgroundDrawable(new ColorDrawable());
 
         LayoutInflater inflater = LayoutInflater.from(context);
         @SuppressLint("InflateParams")
         View v = inflater.inflate(R.layout.running, null);
 
-        LinearLayout layout = v.findViewById(R.id.ll_dialog);
-        ProgressBar pb_progress_bar = v.findViewById(R.id.pb_progress_bar);
+        LinearLayout layout = v.findViewById(R.id.showDialog);
+        ProgressBar pb_progress_bar = v.findViewById(R.id.progressCircle);
         pb_progress_bar.setVisibility(View.VISIBLE);
-        TextView tv = v.findViewById(R.id.tv_loading);
+        TextView tv = v.findViewById(R.id.message);
 
         if (message == null || message.equals("")) {
             tv.setVisibility(View.GONE);
         } else {
             tv.setText(message);
-            tv.setTextColor(context.getResources().getColor(R.color.colorDialog));
+            tv.setTextColor(context.getResources().getColor(R.color.colorBackground));
         }
 
         DisplayMetrics dm = screen.size();
-        double all_Width = dm.widthPixels;
-        double all_Height = dm.heightPixels;
 
-        if(all_Height > all_Width) {
-            progressDialog.setContentView(layout, new LinearLayout.LayoutParams((int) (all_Width / 2),
-                    (int) (all_Height / 5)));
+        if(dm.heightPixels > dm.widthPixels) {
+            progressDialog.setContentView(v, new LinearLayout.LayoutParams(dm.widthPixels, dm.heightPixels));
         }
         else {
-            progressDialog.setContentView(layout, new LinearLayout.LayoutParams((int) (all_Width / 4),
-                    (int) (all_Height / 3)));
+            progressDialog.setContentView(v, new LinearLayout.LayoutParams(dm.widthPixels, dm.heightPixels));
         }
 
         check = true;

@@ -1,4 +1,6 @@
 <resources>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="app_name">Monitor</string>
     <string name="menu_name">JTC-MX-WL</string>
     <string name="menu_btn">Scan</string>
@@ -89,4 +91,8 @@
     <string name="max">It should be kept above the minimum</string>
     <string name="min">It should be kept below the maxmum</string>
     <string name="none">None</string>
+    <string name="sensor">Sensors</string>
+    <string name="switchs">Switch</string>
+    <string name="bar_phonecall">Consultation</string>
+    <string name="power">power :</string>
 </resources>
