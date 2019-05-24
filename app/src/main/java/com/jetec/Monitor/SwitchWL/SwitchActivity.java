@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -28,18 +29,24 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import com.jetec.Monitor.Activity.FirstActivity;
 import com.jetec.Monitor.Activity.StartActivity;
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.Service.BluetoothLeService;
 import com.jetec.Monitor.SupportFunction.LogMessage;
+import com.jetec.Monitor.SupportFunction.Parase;
 import com.jetec.Monitor.SupportFunction.RunningFlash;
+import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SupportFunction.Value;
+import com.jetec.Monitor.SwitchWL.DeviceList.SearchList;
 import com.jetec.Monitor.SwitchWL.Listener.ResetListListener;
 import com.jetec.Monitor.SwitchWL.Listener.StartReset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,18 +59,25 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
     private Intent intents;
     private String BID;
     private String Jetec = "Jetec";
-    private RunningFlash runningFlash;
+    private RunningFlash runningFlash = new RunningFlash(this);
+    private Parase parase = new Parase();
+    private SendValue sendValue;
     private boolean s_connect = false, engineer = false, leave = false;
-    public List<BluetoothDevice> deviceList, checkdeviceList;
-    public List<byte[]> setrecord;
+    private List<BluetoothDevice> deviceList, checkdeviceList;
+    private Map<Integer, List<String>> viewList;
+    private List<byte[]> setrecord;
     private BluetoothLeService mBluetoothLeService;
     private BluetoothAdapter mBluetoothAdapter;
     private StartReset startReset = new StartReset();
+    private SearchList searchList;
     private View no_device;
     private ListView listView;
     private byte[] txValue;
     private String text;
-    private Handler handler;
+    private Handler handler, connectHandler;
+    private List<String> valueList;
+    private ArrayList<String> selectItem;
+    private byte[] getover = {0x4F, 0x56, 0x45, 0x52};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,14 +126,21 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
     @SuppressLint("UseSparseArrays")
     private void device_list() {
         handler = new Handler();
+        connectHandler = new Handler();
         startReset.setListener(this);
         startReset.getContext(this);
+        viewList = new HashMap<>();
         checkdeviceList = new ArrayList<>();
         deviceList = new ArrayList<>();
         setrecord = new ArrayList<>();
+        valueList = new ArrayList<>();
+        selectItem = new ArrayList<>();
+        viewList.clear();
         checkdeviceList.clear();
         deviceList.clear();
         setrecord.clear();
+        selectItem.clear();
+        valueList.clear();
         scanLeDevice();
     }
 
@@ -149,6 +170,15 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
+    private void checkConnected(){
+        connectHandler.postDelayed(() -> {
+            if (s_connect) {
+                sendValue = new SendValue(mBluetoothLeService);
+                sendValue.send(Jetec);
+            }
+        }, 500);
+    }
+
     public final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -168,11 +198,51 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
                 //displayGattServices(mBluetoothLeService.getSupportedGattServices());
                 logMessage.showmessage(TAG, "連線狀態改變");
                 mBluetoothLeService.enableTXNotification();
+                checkConnected();
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 runOnUiThread(() -> {
                     txValue = intents.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
+                    StringBuilder gethex = new StringBuilder();
+                    String[] hexstr = parase.hexstring(txValue);
                     text = new String(txValue, StandardCharsets.UTF_8);
+                    for (String aHexstr : hexstr) {
+                        gethex.append(aHexstr);
+                    }
+                    logMessage.showmessage(TAG, "hexstr = " + gethex);
                     logMessage.showmessage(TAG, "text = " + text);
+                    if (text.startsWith("OK")) {
+                        selectItem.clear();
+                    } else if (text.startsWith("BT")) {
+                        String model = text;
+                        Value.device = text;
+                        String[] arr = model.split("-");
+                        String num = arr[1];
+                        String name = arr[2];
+                        String relay = arr[3];
+                        Value.model_num = Integer.valueOf(num);
+                        Value.model_name = name;
+                        Value.model_relay = Integer.valueOf(relay);
+                        logMessage.showmessage(TAG, "model_num = " + Value.model_num);
+                        logMessage.showmessage(TAG, "model_name = " + Value.model_name);
+                        logMessage.showmessage(TAG, "model_relay = " + Value.model_relay);
+                        selectItem.add("NAME" + valueList.get(0));
+                        sendValue.send("get");
+                    } else {
+                        if (Arrays.equals(txValue, getover)) {
+                            logMessage.showerror(TAG, "selectItem = " + selectItem);
+                            if (selectItem.size() != (Integer.valueOf(valueList.get(3)) + 1)) {
+                                checkConnected();
+                            } else {
+                                if (engineer) {
+                                    //工程模式
+                                } else {
+                                    logMessage.showmessage(TAG, "做畫面囉");
+                                }
+                            }
+                        } else {
+                            selectItem.add(gethex.toString());
+                        }
+                    }
                 });
             }
         }
@@ -200,30 +270,13 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
         }
     };
 
-    private Runnable checkList = new Runnable() {
-        @Override
-        public void run() {
-            for (int i = 0; i < deviceList.size(); i++) {
-                if (checkdeviceList.indexOf(deviceList.get(i)) == -1) {
-                    //noinspection SuspiciousListRemoveInLoop
-                    deviceList.remove(i);
-                    //noinspection SuspiciousListRemoveInLoop
-                    setrecord.remove(i);
-                }
-            }
-            checkdeviceList.clear();
-            startReset.paraseList(deviceList, setrecord);
-            startReset.startReset();
-        }
-    };
-
     private void backtofirst() {
         Intent intent = new Intent(this, StartActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void monitoract(){
+    private void monitoract() {
         Intent intent = new Intent(this, FirstActivity.class);
         startActivity(intent);
         finish();
@@ -236,6 +289,40 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
         }
         mBluetoothLeService.disconnect();
     }
+
+    public static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
+    }
+
+    private void Remote_connec() {
+        if (!runningFlash.isCheck()) {
+            runningFlash.startFlash(getString(R.string.connecting));
+        }
+        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        s_connect = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        if (s_connect) {
+            logMessage.showmessage(TAG, "開始訂閱");
+            registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        } else {
+            logMessage.showmessage(TAG, "服務綁訂狀態  = " + false);
+        }
+    }
+
+    private AdapterView.OnItemClickListener itemOnClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            vibrator.vibrate(100);
+            valueList = viewList.get(position);
+            BID = Objects.requireNonNull(valueList).get(1);
+            Value.device_name = Objects.requireNonNull(valueList).get(0);
+            Remote_connec();
+        }
+    };
 
     public boolean onKeyDown(int key, KeyEvent event) {
         switch (key) {
@@ -293,13 +380,6 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
     protected void onPause() {
         super.onPause();
         logMessage.showmessage(TAG, "onPause");
-        if (s_connect)
-            unregisterReceiver(mGattUpdateReceiver);
-        if (mBluetoothAdapter != null) {
-            //noinspection deprecation
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            s_connect = true;
-        }
     }
 
     @Override
@@ -347,16 +427,47 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public void resetList() {
-        if(!leave) {
+        if (!leave) {
             handler.postDelayed(() -> {
+                //new Thread(checkList).start();
+                for (int i = 0; i < deviceList.size(); i++) {
+                    if (checkdeviceList.indexOf(deviceList.get(i)) == -1) {
+                        //noinspection SuspiciousListRemoveInLoop
+                        deviceList.remove(i);
+                        //noinspection SuspiciousListRemoveInLoop
+                        setrecord.remove(i);
+                    }
+                }
+                checkdeviceList.clear();
+                startReset.paraseList(deviceList, setrecord);
                 handler.removeCallbacksAndMessages(null);
-                new Thread(checkList).start();
+                startReset.startReset();
             }, 3000);
         }
     }
 
     @Override
     public void paraseList(Map<Integer, List<String>> setList) {
-        logMessage.showerror(TAG,"setList = " + setList);
+        logMessage.showerror(TAG, "setList = " + setList);
+        this.viewList = setList;
+        if (listView.getAdapter() == null) {
+            searchList = new SearchList(this, setList);
+            listView.setAdapter(searchList);
+            listView.setOnItemClickListener(itemOnClick);
+            if (setList.size() != 0) {
+                no_device.setVisibility(View.GONE);
+                listView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (setList.size() != 0) {
+                no_device.setVisibility(View.GONE);
+                listView.setVisibility(View.VISIBLE);
+            } else {
+                no_device.setVisibility(View.VISIBLE);
+                listView.setVisibility(View.GONE);
+            }
+            searchList.resetList(setList);
+            searchList.notifyDataSetChanged();
+        }
     }
 }

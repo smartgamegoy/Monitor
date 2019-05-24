@@ -71,7 +71,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
     private CheckDeviceName checkDeviceName = new CheckDeviceName();
     private CheckDeviceNum checkDeviceNum = new CheckDeviceNum();
     private RunningFlash runningFlash;
-    private String BID;
+    private String BID; //device address
     private String Jetec = "Jetec";
     private boolean s_connect = false, engineer = false, nextpage = false;
     private BluetoothLeService mBluetoothLeService;
