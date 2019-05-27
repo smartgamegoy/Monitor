@@ -237,6 +237,7 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
                                     //工程模式
                                 } else {
                                     logMessage.showmessage(TAG, "做畫面囉");
+                                    showview();
                                 }
                             }
                         } else {
@@ -247,6 +248,16 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
             }
         }
     };
+
+    private void showview(){
+        Intent intent = new Intent(this, SwitchViewActivity.class);
+        intent.putStringArrayListExtra("selectItem", selectItem);
+        intent.putExtra("BID", BID);
+        Service_close();
+        runningFlash.closeFlash();
+        startActivity(intent);
+        finish();
+    }
 
     public static BluetoothManager getManager(Context context) {    //獲取此設備默認藍芽適配器
         return (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -345,9 +356,10 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
         super.onDestroy();
         logMessage.showmessage(TAG, "onDestroy()");
         leave = true;
-        if (Value.connected) {
-            Value.connected = false;
-        }
+        handler.removeCallbacksAndMessages(null);
+        if (mBluetoothAdapter != null)
+            //noinspection deprecation
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
         if (mBluetoothLeService != null) {
             if (s_connect) {
                 unbindService(mServiceConnection);
@@ -356,9 +368,8 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
             mBluetoothLeService.stopSelf();
             mBluetoothLeService = null;
         }
-        if (mBluetoothAdapter != null)
-            //noinspection deprecation
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+        unregisterReceiver(mGattUpdateReceiver);
+        Service_close();
     }
 
     @Override
