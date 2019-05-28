@@ -93,6 +93,12 @@
     <string name="none">無</string>
     <string name="sensor">感測器</string>
     <string name="switchs">開關</string>
+    <string name="switchname">開關名稱</string>
     <string name="bar_phonecall">線上諮詢</string>
     <string name="power">電量 :</string>
+    <string name="LOG">記錄</string>
+    <string name="showdialog">顯示圖表</string>
+    <string name="datadownload">資料下載</string>
+    <string name="loadbar">匯入設定</string>
+    <string name="savedialog">儲存設定</string>
 </resources>

@@ -260,7 +260,6 @@ public class DeviceFunction extends AppCompatActivity {
         if (id == R.id.action_settings) {
             vibrator.vibrate(100);
             Service_close();
-            Value.connected = false;
             disconnect();
             return true;
         }
@@ -271,9 +270,6 @@ public class DeviceFunction extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         logMessage.showmessage(TAG, "onDestroy()");
-        if (Value.connected) {
-            Value.connected = false;
-        }
         if (mBluetoothLeService != null) {
             if (s_connect) {
                 unbindService(mServiceConnection);

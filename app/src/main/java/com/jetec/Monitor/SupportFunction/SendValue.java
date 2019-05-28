@@ -24,4 +24,8 @@ public class SendValue {
             e.printStackTrace();
         }
     }
+
+    public void sendbyte(byte[] strValue){
+        bluetoothLeService.writeRXCharacteristic(strValue);
+    }
 }

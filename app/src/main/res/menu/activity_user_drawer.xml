@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/savedialog"
+            android:title="@string/savedialog"
+            android:icon="@drawable/save"/>
+        <item
+            android:id="@+id/loadbar"
+            android:title="@string/loadbar"
+            android:icon="@drawable/foreign"/>
+        <item
+            android:id="@+id/datadownload"
+            android:title="@string/datadownload"
+            android:icon="@drawable/download"/>
+        <item
+            android:id="@+id/showdialog"
+            android:title="@string/showdialog"
+            android:icon="@drawable/network"/>
+    </group>
+
+    <item android:title="@string/LOG">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:title=""/>
+        </menu>
+    </item>
+
+</menu>

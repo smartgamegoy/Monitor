@@ -93,6 +93,12 @@
     <string name="none">None</string>
     <string name="sensor">Sensors</string>
     <string name="switchs">Switch</string>
+    <string name="switchname">Switch name</string>
     <string name="bar_phonecall">Consultation</string>
     <string name="power">power :</string>
+    <string name="LOG">Log record</string>
+    <string name="showdialog">Show dialog</string>
+    <string name="datadownload">Download data</string>
+    <string name="loadbar">Load set up</string>
+    <string name="savedialog">Save set up</string>
 </resources>
