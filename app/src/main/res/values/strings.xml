@@ -100,5 +100,18 @@
     <string name="showdialog">Show dialog</string>
     <string name="datadownload">Download data</string>
     <string name="loadbar">Load set up</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="closedialog">Close</string>
+    <string name="namedialog">Data name</string>
+    <string name="adddialog">Add</string>
+    <string name="listdialog">Data list</string>
+    <string name="deldialog">Delete</string>
+    <string name="updialog">Modify</string>
+    <string name="listdata">No data</string>
     <string name="savedialog">Save set up</string>
+    <string name="change">Modify name</string>
+    <string name="name">Name</string>
+    <string name="addblank">Do not blank!</string>
+    <string name="same">Have the same name</string>
 </resources>

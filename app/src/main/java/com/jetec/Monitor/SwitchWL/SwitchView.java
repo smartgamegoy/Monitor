@@ -12,7 +12,6 @@ import com.jetec.Monitor.SupportFunction.LogMessage;
 import com.jetec.Monitor.SupportFunction.Parase;
 import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SwitchWL.Dialog.SwitchNameDialog;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -8,8 +8,10 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
@@ -19,12 +21,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.jetec.Monitor.Activity.StartActivity;
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.Service.BluetoothLeService;
@@ -32,20 +37,32 @@ import com.jetec.Monitor.SupportFunction.LogMessage;
 import com.jetec.Monitor.SupportFunction.Parase;
 import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SupportFunction.Value;
+import com.jetec.Monitor.SwitchWL.Dialog.DataDialog;
+import com.jetec.Monitor.SwitchWL.Dialog.LoadDialog;
 import com.jetec.Monitor.SwitchWL.Dialog.NameDialog;
 import com.jetec.Monitor.SwitchWL.Listener.BlueServiceListener;
 import com.jetec.Monitor.SwitchWL.Listener.GetBlueService;
+import com.jetec.Monitor.SwitchWL.Listener.GetStatus;
+import com.jetec.Monitor.SwitchWL.Listener.LoadListener;
+import com.jetec.Monitor.SwitchWL.SQL.SQLData;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class SwitchViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BlueServiceListener {
+public class SwitchViewActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        BlueServiceListener, LoadListener {
 
     private String TAG = "SwitchViewActivity";
     private LogMessage logMessage = new LogMessage();
     private SwitchView switchView = new SwitchView();
     private Parase parase = new Parase();
     private GetBlueService getBlueService = new GetBlueService();
+    private GetStatus getStatus = new GetStatus();
+    private SQLData sqlData = new SQLData(this);
     private Vibrator vibrator;
     private Intent intents;
     private String BID;
@@ -55,6 +72,7 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
     private SendValue sendValue;
     private TextView textView2;
     private LinearLayout linearLayout, linearLayout2;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +102,7 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
     private void get_intent() {
         ItemList = new ArrayList<>();
         ItemList.clear();
+        mHandler = new Handler();
 
         Intent intent = getIntent();
         BID = intent.getStringExtra("BID");
@@ -106,6 +125,28 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (!Value.downlog) {
+            navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
+        } else {
+            navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.end) + getString(R.string.LOG));
+        }
+
+        navigationView.getMenu().findItem(R.id.datadownload).setEnabled(false);
+        SpannableString spanString1 = new SpannableString(navigationView.getMenu().
+                findItem(R.id.datadownload).getTitle().toString());
+        spanString1.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString1.length(), 0);
+        navigationView.getMenu().findItem(R.id.datadownload).setTitle(spanString1);
+        navigationView.getMenu().findItem(R.id.showdialog).setEnabled(false);
+        SpannableString spanString2 = new SpannableString(navigationView.getMenu().
+                findItem(R.id.showdialog).getTitle().toString());
+        spanString2.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString2.length(), 0);
+        navigationView.getMenu().findItem(R.id.showdialog).setTitle(spanString2);
+        navigationView.getMenu().findItem(R.id.nav_share).setEnabled(false);
+        SpannableString spanString3 = new SpannableString(navigationView.getMenu().
+                findItem(R.id.nav_share).getTitle().toString());
+        spanString3.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString3.length(), 0);
+        navigationView.getMenu().findItem(R.id.nav_share).setTitle(spanString3);
 
         linearLayout = findViewById(R.id.linearLayout);
         linearLayout2 = findViewById(R.id.linearLayout2);
@@ -138,6 +179,7 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
                     String text = new String(txValue, StandardCharsets.UTF_8);
                     logMessage.showmessage(TAG, "text = " + text);
                     if (text.contains("NAME")) {
+                        ItemList.set(0, text);
                         text = text.replace("NAME", "");
                         textView2.setText(text);
                     } else {
@@ -146,6 +188,8 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
                         for (String aHexvalue : hexvalue) {
                             str.append(aHexvalue);
                         }
+                        int row = Integer.valueOf(str.toString().substring(0, 2));
+                        ItemList.set(row, str.toString());
                         switchView.resetView(SwitchViewActivity.this, vibrator, str.toString(), sendValue);
                     }
                 });
@@ -180,6 +224,54 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
             logMessage.showmessage(TAG, "失去連線端");
         }
     };
+
+    private void saveList() {
+        String devicename = Value.device;
+        JSONArray savejson = new JSONArray(ItemList);
+        logMessage.showmessage(TAG, "devicename = " + devicename);
+        logMessage.showmessage(TAG, "savejson = " + savejson.toString());
+        DataDialog dataDialog = new DataDialog();
+        dataDialog.setDialog(this, vibrator, devicename, savejson.toString(), sqlData);
+    }
+
+    private void loadList() {
+        String devicename = Value.device;
+        getStatus.setListener(this);
+        LoadDialog loadDialog = new LoadDialog();
+        loadDialog.setDialog(this, vibrator, getStatus, sqlData, devicename);
+    }
+
+    private void sendloadlist(JSONArray loadlist, int count) {
+        mHandler.postDelayed(() -> {
+            try {
+                String hexstr = loadlist.get(count).toString();
+                String headstr = hexstr.substring(0, 4);
+                String namestr = hexstr.substring(4);
+                byte[] head = parase.hex2Byte(headstr);
+                byte[] name = parase.hex2Byte(namestr);
+                if (name.length != 18) {
+                    byte[] check = new byte[18];
+                    for (int i = 0; i < 18; i++) {
+                        if (i < name.length) {
+                            check[i] = name[i];
+                        } else {
+                            check[i] = 0x00;
+                        }
+                    }
+                    name = check;
+                }
+                byte[] ready = new byte[head.length + name.length];
+                System.arraycopy(head, 0, ready, 0, head.length);
+                System.arraycopy(name, 0, ready, head.length, name.length);
+                sendValue.sendbyte(ready);
+                mHandler.removeCallbacksAndMessages(null);
+                sendloadlist(loadlist, (count + 1));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, 100);
+
+    }
 
     public boolean onKeyDown(int key, KeyEvent event) {
         switch (key) {
@@ -263,6 +355,8 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
             mBluetoothLeService.stopSelf();
             mBluetoothLeService = null;
         }
+        mHandler.removeCallbacksAndMessages(null);
+        sqlData.close();
     }
 
     @Override
@@ -278,7 +372,6 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
         super.onResume();
         logMessage.showmessage(TAG, "onResume");
         logMessage.showmessage(TAG, "s_connect = " + s_connect);
-
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(BID);
@@ -287,8 +380,28 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        return false;
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        // Handle navigation view item clicks here.
+
+        int id = item.getItemId();
+        if (id == R.id.savedialog) {
+            vibrator.vibrate(100);
+            saveList();
+        } else if (id == R.id.loadbar) {
+            vibrator.vibrate(100);
+            loadList();
+        } else if (id == R.id.datadownload) {
+            vibrator.vibrate(100);
+        } else if (id == R.id.showdialog) {
+            vibrator.vibrate(100);
+        } else if (id == R.id.nav_share) {
+            vibrator.vibrate(100);
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
@@ -311,5 +424,22 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
         });
 
         switchView.setView(this, vibrator, linearLayout2, ItemList, sendValue);
+    }
+
+    @Override
+    public void update(String savelist) {
+        try {
+            logMessage.showmessage(TAG, "ItemList = " + ItemList);
+            JSONArray listjson = new JSONArray(savelist);
+            int count = 1;
+            sendloadlist(listjson, count);
+            /*logMessage.showmessage(TAG, "savelist = " + savelist);
+            for(int i = 1; i < listjson.length(); i++){
+                ItemList.set(i, listjson.get(i).toString());
+            }
+            logMessage.showmessage(TAG, "ItemList = " + ItemList);*/
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -101,4 +101,17 @@
     <string name="datadownload">資料下載</string>
     <string name="loadbar">匯入設定</string>
     <string name="savedialog">儲存設定</string>
+    <string name="start">開始</string>
+    <string name="end">停止</string>
+    <string name="closedialog">關閉</string>
+    <string name="namedialog">資料名稱</string>
+    <string name="adddialog">新增</string>
+    <string name="listdialog">儲存列表</string>
+    <string name="deldialog">刪除</string>
+    <string name="updialog">修改</string>
+    <string name="listdata">沒有資料</string>
+    <string name="change">修改名稱</string>
+    <string name="name">名稱</string>
+    <string name="addblank">不可為空!</string>
+    <string name="same">名稱重複</string>
 </resources>
