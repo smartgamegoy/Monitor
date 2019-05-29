@@ -41,6 +41,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.ScanRecord.DeviceParse;
 import com.jetec.Monitor.SupportFunction.*;
@@ -48,7 +49,9 @@ import com.jetec.Monitor.Service.BluetoothLeService;
 import com.jetec.Monitor.SupportFunction.SQL.AlertRecord;
 import com.jetec.Monitor.SwitchWL.SwitchActivity;
 import com.jetec.Monitor.Thread.*;
+
 import org.json.JSONArray;
+
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,9 +61,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import static java.lang.Thread.sleep;
 
-public class FirstActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class FirstActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private String TAG = "FirstActivity";
     private TimeCheck timeCheck = new TimeCheck();
@@ -93,8 +97,8 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
     private TextView text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11, text12, text13;
     private LogMessage logMessage = new LogMessage();
     private ArrayList<String> dataList, selectItem, reList;
-    private final String[] T = {"EH", "EL"};
-    private final String[] H = {"EH", "EL"};
+    private final String[] T = {"PV", "EH", "EL"};
+    private final String[] H = {"PV", "EH", "EL"};
     private final String[] C = {"EH", "EL"};
     private final String[] D = {"EH", "EL"};
     private final String[] E = {"EH", "EL"};
@@ -338,13 +342,11 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                 textView2.setText(list.get(1));
                 int power = Integer.valueOf(list.get(2));
                 Log.e(TAG, "power = " + power);
-                if(power > 100){
+                if (power > 100) {
                     text13.setText(getString(R.string.power) + "100%");
-                }
-                else if(power < 0){
+                } else if (power < 0) {
                     text13.setText("");
-                }
-                else {
+                } else {
                     text13.setText(getString(R.string.power) + power + "%");
                 }
                 String a = list.get(3);
@@ -434,13 +436,11 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                     assert list != null;
                     int power = Integer.valueOf(list.get(2));
                     Log.e(TAG, "list = " + list);
-                    if(power > 100){
+                    if (power > 100) {
                         text13.setText(getString(R.string.power) + "100%");
-                    }
-                    else if(power < 0){
+                    } else if (power < 0) {
                         text13.setText("");
-                    }
-                    else {
+                    } else {
                         text13.setText(getString(R.string.power) + power + "%");
                     }
                     String a = list.get(3);
@@ -605,6 +605,8 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                                     String str = aW + (i + 1);
                                     newList.add(str);
                                 }
+                            } else if (name.charAt(i) == 'L') {
+                                newList.addAll(Arrays.asList(L));
                             }
                             /*else if(name.charAt(i) == 'I'){
                                 for(int j = 0; j < I.length; j++){
@@ -1268,7 +1270,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
         finish();
     }
 
-    private void switchact(){
+    private void switchact() {
         Intent intent = new Intent(this, SwitchActivity.class);
         startActivity(intent);
         finish();
