@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Value {
     public static boolean connected = false;
     public static boolean downlog = false;
+    public static boolean catchL = false;
     public static int model_num;
     public static String model_name, device_name;
     public static int model_relay;

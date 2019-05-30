@@ -7,12 +7,20 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -37,7 +45,7 @@ import java.util.Objects;
 
 import static com.jetec.Monitor.Activity.FirstActivity.makeGattUpdateIntentFilter;
 
-public class DeviceFunction extends AppCompatActivity {
+public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private String TAG = "DeviceFunction";
     private LogMessage logMessage = new LogMessage();
@@ -46,7 +54,7 @@ public class DeviceFunction extends AppCompatActivity {
     private BluetoothLeService mBluetoothLeService;
     private boolean s_connect = false;
     private Intent intents;
-    private String BID;
+    private String BID, modelName;
     private ArrayList<String> selectItem;
     private ArrayList<String> reList;
     private ArrayList<String> deviceNameList;
@@ -101,15 +109,56 @@ public class DeviceFunction extends AppCompatActivity {
         logMessage.showmessage(TAG, "reList = " + reList);
         logMessage.showmessage(TAG, "dataList = " + dataList);
 
+        modelName = Value.model_name;
+        if (modelName.contains("L")) {
+            Value.catchL = true;
+        } else {
+            Value.catchL = false;
+        }
+
         show_device_function();
     }
 
     private void show_device_function() {
-        setContentView(R.layout.device_title);
+        setContentView(R.layout.devicedrawerlayout);
 
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, myToolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        if (!Value.downlog) {
+            navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
+        } else {
+            navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.end) + getString(R.string.LOG));
+        }
+
+        if (!Value.catchL) {
+            navigationView.getMenu().findItem(R.id.datadownload).setEnabled(false);
+            SpannableString spanString1 = new SpannableString(navigationView.getMenu().
+                    findItem(R.id.datadownload).getTitle().toString());
+            spanString1.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString1.length(), 0);
+            navigationView.getMenu().findItem(R.id.datadownload).setTitle(spanString1);
+            navigationView.getMenu().findItem(R.id.showdialog).setEnabled(false);
+            SpannableString spanString2 = new SpannableString(navigationView.getMenu().
+                    findItem(R.id.showdialog).getTitle().toString());
+            spanString2.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString2.length(), 0);
+            navigationView.getMenu().findItem(R.id.showdialog).setTitle(spanString2);
+            navigationView.getMenu().findItem(R.id.nav_share).setEnabled(false);
+            SpannableString spanString3 = new SpannableString(navigationView.getMenu().
+                    findItem(R.id.nav_share).getTitle().toString());
+            spanString3.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString3.length(), 0);
+            navigationView.getMenu().findItem(R.id.nav_share).setTitle(spanString3);
+        }
 
         ListView listname = findViewById(R.id.list_name_function);
 
@@ -283,6 +332,7 @@ public class DeviceFunction extends AppCompatActivity {
             mBluetoothLeService.stopSelf();
             mBluetoothLeService = null;
         }
+        Value.downlog = false;
     }
 
     @Override
@@ -321,5 +371,40 @@ public class DeviceFunction extends AppCompatActivity {
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             // port do nothing is ok
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        // Handle navigation view item clicks here.
+
+        int id = item.getItemId();
+        if (id == R.id.savedialog) {
+            vibrator.vibrate(100);
+            //saveList();
+        } else if (id == R.id.loadbar) {
+            vibrator.vibrate(100);
+            //loadList();
+        } else if (id == R.id.datadownload) {
+            vibrator.vibrate(100);
+        } else if (id == R.id.showdialog) {
+            vibrator.vibrate(100);
+        } else if (id == R.id.nav_share) {
+            vibrator.vibrate(100);
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

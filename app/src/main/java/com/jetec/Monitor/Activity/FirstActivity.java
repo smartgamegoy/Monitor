@@ -656,6 +656,9 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                         }
                         else if(text.startsWith("COUNT") || text.startsWith("DATE") || text.startsWith("TIME") || text.startsWith("LOG")){
                             checkList.add(text);
+                            if(text.startsWith("LOG")){
+                                Value.downlog = text.matches("LOGON");
+                            }
                         }
                     }
                 });
