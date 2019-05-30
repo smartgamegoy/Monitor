@@ -96,7 +96,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
             linearLayout4, linearLayout5, linearLayout6;
     private TextView text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11, text12, text13;
     private LogMessage logMessage = new LogMessage();
-    private ArrayList<String> dataList, selectItem, reList;
+    private ArrayList<String> dataList, selectItem, reList, checkList;
     private final String[] T = {"PV", "EH", "EL"};
     private final String[] H = {"PV", "EH", "EL"};
     private final String[] C = {"EH", "EL"};
@@ -171,6 +171,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
         dataList = new ArrayList<>();
         selectItem = new ArrayList<>();
         reList = new ArrayList<>();
+        checkList = new ArrayList<>();
         animation = AnimationUtils.loadAnimation(this, R.anim.animate);
 
         scanLeDevice();
@@ -543,6 +544,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                         dataList.clear();
                         selectItem.clear();
                         reList.clear();
+                        checkList.clear();
                     } else if (text.startsWith("BT")) {
                         String model = text;
                         Value.device = text;
@@ -613,16 +615,13 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                                     String str = I[j] + (i + 1);
                                     newList.add(str);
                                 }
-                            }
-                            else if(name.charAt(i) == 'L'){
-                                newList.addAll(Arrays.asList(L));
                             }*/
                         }
                         for (int j = 0; j < Value.model_relay; j++) {
                             String r = "RL" + (j + 1);
                             newList.add(r);
                         }
-                        newList.addAll(Arrays.asList(SP));
+                        //newList.addAll(Arrays.asList(SP));
                         Value.modelList = newList;
                         logMessage.showmessage(TAG, "modelList = " + Value.modelList);
                         sendValue = new SendValue(mBluetoothLeService);
@@ -632,7 +631,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                         logMessage.showmessage(TAG, "selectItem = " + selectItem);
                         logMessage.showmessage(TAG, "reList = " + reList);
                         logMessage.showmessage(TAG, "dataList = " + dataList);
-                        if (Value.modelList.size() == reList.size() && Value.modelList.size() == dataList.size()) {
+                        if (Value.modelList.size() == checkList.size()) {
                             if (engineer) {
                                 checkpassword();
                             } else {
@@ -642,15 +641,21 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                             selectItem.clear();
                             reList.clear();
                             dataList.clear();
+                            checkList.clear();
                             sendValue = new SendValue(mBluetoothLeService);
                             sendValue.send("get");
                         }
                     } else {
-                        if (text.startsWith("EH") || text.startsWith("EL") || text.startsWith("RL") ||
-                                text.startsWith("ADR") || text.startsWith("SPK") || text.startsWith("PR")) {
+                        if (text.startsWith("PV") || text.startsWith("EH") || text.startsWith("EL") ||
+                                text.startsWith("RL") || text.startsWith("ADR") || text.startsWith("SPK") ||
+                                text.startsWith("PR") || text.startsWith("INTER")) {
                             selectItem.add(checkDeviceName.setName(text));
                             reList.add(text);
                             dataList.add(checkDeviceNum.get(text));
+                            checkList.add(text);
+                        }
+                        else if(text.startsWith("COUNT") || text.startsWith("DATE") || text.startsWith("TIME") || text.startsWith("LOG")){
+                            checkList.add(text);
                         }
                     }
                 });

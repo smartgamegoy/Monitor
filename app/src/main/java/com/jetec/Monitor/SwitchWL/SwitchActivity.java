@@ -368,8 +368,6 @@ public class SwitchActivity extends AppCompatActivity implements NavigationView.
             mBluetoothLeService.stopSelf();
             mBluetoothLeService = null;
         }
-        unregisterReceiver(mGattUpdateReceiver);
-        Service_close();
     }
 
     @Override

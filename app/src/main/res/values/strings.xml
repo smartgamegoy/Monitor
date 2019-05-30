@@ -38,6 +38,9 @@
     <string name="I1">1st</string>
     <string name="I2">2nd</string>
     <string name="I3">3rd</string>
+    <string name="PV1">offset</string>
+    <string name="PV2">offset</string>
+    <string name="PV3">offset</string>
     <string name="EH1">alarm max</string>
     <string name="EH2">alarm max</string>
     <string name="EH3">alarm max</string>
@@ -114,4 +117,13 @@
     <string name="name">Name</string>
     <string name="addblank">Do not blank!</string>
     <string name="same">Have the same name</string>
+    <string name="INTER">Log interval</string>
+    <string name="interval">Interval</string>
+    <string name="hour">Hour:</string>
+    <string name="minute">Minute:</string>
+    <string name="seconds">Seconds:</string>
+    <string name="description">The time interval must be between 60 seconds and 1 hour</string>
+    <string name="warning">Warning!</string>
+    <string name="reinterval">It will stop records and clean all records data.</string>
+    <string name="intervalset">Setting…</string>
 </resources>

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import com.jetec.Monitor.Dialog.*;
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.Service.BluetoothLeService;
@@ -29,9 +30,11 @@ import com.jetec.Monitor.SupportFunction.GetDeviceNum;
 import com.jetec.Monitor.SupportFunction.LogMessage;
 import com.jetec.Monitor.SupportFunction.Value;
 import com.jetec.Monitor.SupportFunction.ViewAdapter.Function;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
+
 import static com.jetec.Monitor.Activity.FirstActivity.makeGattUpdateIntentFilter;
 
 public class DeviceFunction extends AppCompatActivity {
@@ -117,7 +120,7 @@ public class DeviceFunction extends AppCompatActivity {
         getDeviceNum = new GetDeviceNum(this);
         rlDialog = new RLDialog(this);
 
-        logMessage.showmessage(TAG,"reList = " + reList);
+        logMessage.showmessage(TAG, "reList = " + reList);
 
         for (int i = 0; i < reList.size(); i++) {
             deviceNameList.add(getDeviceName.get(reList.get(i)));
@@ -139,17 +142,19 @@ public class DeviceFunction extends AppCompatActivity {
             vibrator.vibrate(100);
             String select = selectItem.get(position);
             String title_name = deviceNameList.get(position);
-            logMessage.showmessage(TAG,"select = " + select);
+            logMessage.showmessage(TAG, "select = " + select);
             //noinspection deprecation
-            if(select.startsWith("SPK")){
+            if (select.startsWith("SPK")) {
                 String num = deviceNumList.get(position);
                 spkDialog.setAlert(DeviceFunction.this, mBluetoothLeService, select,
                         title_name, num);
-            }
-            else if(select.startsWith("RL")){
+            } else if (select.startsWith("RL")) {
                 rlDialog.setAlert(mBluetoothLeService, select, title_name);
-            }
-            else {
+            } else if (select.startsWith("INTER")) {
+                String description = getString(R.string.description);
+                InterDialog interDialog = new InterDialog();
+                interDialog.setDialog(DeviceFunction.this, vibrator, mBluetoothLeService, description);
+            } else {
                 inputDialog.setAlert(DeviceFunction.this, mBluetoothLeService, select,
                         title_name, selectItem, deviceNumList);
             }
@@ -174,20 +179,20 @@ public class DeviceFunction extends AppCompatActivity {
                 runOnUiThread(() -> {
                     byte[] txValue = intents.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
                     String text = new String(txValue, StandardCharsets.UTF_8);
-                    logMessage.showmessage(TAG,"text = " + text);
-                    if(text.startsWith("EH") || text.startsWith("EL") ||
+                    logMessage.showmessage(TAG, "text = " + text);
+                    if (text.startsWith("EH") || text.startsWith("EL") ||
                             text.startsWith("PR") || text.startsWith("RL") ||
-                            text.startsWith("ADR") || text.startsWith("SPK")){
+                            text.startsWith("ADR") || text.startsWith("SPK") ||
+                            text.startsWith("PV") || text.startsWith("INTER")) {
                         int i = selectItem.indexOf(checkDeviceName.setName(text));
                         reList.set((i - 1), text);
                         deviceNumList.set(i, getDeviceNum.get(reList.get(i - 1)));
-                        logMessage.showmessage(TAG,"reList = " + reList);
-                        logMessage.showmessage(TAG,"deviceNumList = " + deviceNumList);
+                        logMessage.showmessage(TAG, "reList = " + reList);
+                        logMessage.showmessage(TAG, "deviceNumList = " + deviceNumList);
                         function.notifyDataSetChanged();
-                    }
-                    else if(text.startsWith("NAME")){
+                    } else if (text.startsWith("NAME")) {
                         deviceNumList.set(0, text.substring(4));
-                        logMessage.showmessage(TAG,"deviceNumList = " + deviceNumList);
+                        logMessage.showmessage(TAG, "deviceNumList = " + deviceNumList);
                         function.notifyDataSetChanged();
                     }
                 });

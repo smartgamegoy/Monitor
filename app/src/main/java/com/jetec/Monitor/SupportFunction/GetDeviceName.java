@@ -27,227 +27,99 @@ public class GetDeviceName {
 
         String rename = "";
 
-        if(str.startsWith("EH1")){
-            if(name.get(0).toString().matches("T")){
+        if(str.startsWith("PV")){
+            int get = Integer.valueOf(str.substring(2, 3));
+            if(name.get((get - 1)).toString().matches("T")){
+                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.PV1);
+            }else if(name.get((get - 1)).toString().matches("H")){
+                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.PV1);
+            }else if(name.get((get - 1)).toString().matches("C") ||
+                    name.get((get - 1)).toString().matches("D") ||
+                    name.get((get - 1)).toString().matches("E")){
+                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.PV1);
+            }else if(name.get((get - 1)).toString().matches("I")){
+                rename = this.context.getString(R.string.I1) + " " + this.context.getString(R.string.PV1);
+            }else if(name.get((get - 1)).toString().matches("P")){
+                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.PV1);
+            }else if(name.get((get - 1)).toString().matches("M")){
+                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.PV1);
+            }else if(name.get((get - 1)).toString().matches("Z")){
+                rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.PV1);
+            }
+        }else if(str.startsWith("EH")){
+            int get = Integer.valueOf(str.substring(2, 3));
+            if(name.get((get - 1)).toString().matches("T")){
                 rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.EH1);
-            }
-            else if(name.get(0).toString().matches("H")){
+            }else if(name.get((get - 1)).toString().matches("H")){
                 rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.EH1);
-            }
-            else if(name.get(0).toString().matches("C") ||
-                    name.get(0).toString().matches("D") ||
-                    name.get(0).toString().matches("E")){
+            }else if(name.get((get - 1)).toString().matches("C") ||
+                    name.get((get - 1)).toString().matches("D") ||
+                    name.get((get - 1)).toString().matches("E")){
                 rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.EH1);
-            }
-            else if(name.get(0).toString().matches("I")){
+            }else if(name.get((get - 1)).toString().matches("I")){
                 rename = this.context.getString(R.string.I1) + " " + this.context.getString(R.string.EH1);
-            }
-            else if(name.get(0).toString().matches("P")){
+            }else if(name.get((get - 1)).toString().matches("P")){
                 rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.EH1);
-            }
-            else if(name.get(0).toString().matches("M")){
+            }else if(name.get((get - 1)).toString().matches("M")){
                 rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.EH1);
-            }
-            else if(name.get(0).toString().matches("Z")){
+            }else if(name.get((get - 1)).toString().matches("Z")){
                 rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.EH1);
             }
-        }
-        if(str.startsWith("EH2")){
-            if(name.get(1).toString().matches("T")){
-                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.EH2);
-            }
-            else if(name.get(1).toString().matches("H")){
-                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.EH2);
-            }
-            else if(name.get(1).toString().matches("C") ||
-                    name.get(1).toString().matches("D") ||
-                    name.get(1).toString().matches("E")){
-                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.EH2);
-            }
-            else if(name.get(1).toString().matches("I")){
-                rename = this.context.getString(R.string.I2) + " " + this.context.getString(R.string.EH2);
-            }
-            else if(name.get(1).toString().matches("P")){
-                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.EH2);
-            }
-            else if(name.get(1).toString().matches("M")){
-                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.EH2);
-            }
-            else if(name.get(1).toString().matches("Z")){
-                rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.EH2);
-            }
-        }
-        if(str.startsWith("EH3")){
-            if(name.get(2).toString().matches("T")){
-                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.EH3);
-            }
-            else if(name.get(2).toString().matches("H")){
-                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.EH3);
-            }
-            else if(name.get(2).toString().matches("C") ||
-                    name.get(2).toString().matches("D") ||
-                    name.get(2).toString().matches("E")){
-                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.EH3);
-            }
-            else if(name.get(2).toString().matches("I")){
-                rename = this.context.getString(R.string.I3) + " " + this.context.getString(R.string.EH3);
-            }
-            else if(name.get(2).toString().matches("P")){
-                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.EH3);
-            }
-            else if(name.get(2).toString().matches("M")){
-                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.EH3);
-            }
-            else if(name.get(2).toString().matches("Z")){
-                rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.EH3);
-            }
-        }
-        if(str.startsWith("EL1")){
-            if(name.get(0).toString().matches("T")){
+        }else if(str.startsWith("EL")){
+            int get = Integer.valueOf(str.substring(2, 3));
+            if(name.get((get - 1)).toString().matches("T")){
                 rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.EL1);
-            }
-            else if(name.get(0).toString().matches("H")){
+            }else if(name.get((get - 1)).toString().matches("H")){
                 rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.EL1);
-            }
-            else if(name.get(0).toString().matches("C") ||
-                    name.get(0).toString().matches("D") ||
-                    name.get(0).toString().matches("E")){
+            }else if(name.get((get - 1)).toString().matches("C") ||
+                    name.get((get - 1)).toString().matches("D") ||
+                    name.get((get - 1)).toString().matches("E")){
                 rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.EL1);
-            }
-            else if(name.get(0).toString().matches("I")){
+            }else if(name.get((get - 1)).toString().matches("I")){
                 rename = this.context.getString(R.string.I1) + " " + this.context.getString(R.string.EL1);
-            }
-            else if(name.get(0).toString().matches("P")){
+            }else if(name.get((get - 1)).toString().matches("P")){
                 rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.EL1);
-            }
-            else if(name.get(0).toString().matches("M")){
+            }else if(name.get((get - 1)).toString().matches("M")){
                 rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.EL1);
-            }
-            else if(name.get(0).toString().matches("Z")){
+            }else if(name.get((get - 1)).toString().matches("Z")){
                 rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.EL1);
             }
-        }
-        if(str.startsWith("EL2")){
-            if(name.get(1).toString().matches("T")){
-                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.EL2);
-            }
-            else if(name.get(1).toString().matches("H")){
-                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.EL2);
-            }
-            else if(name.get(1).toString().matches("C") ||
-                    name.get(1).toString().matches("D") ||
-                    name.get(1).toString().matches("E")){
-                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.EL2);
-            }
-            else if(name.get(1).toString().matches("I")){
-                rename = this.context.getString(R.string.I2) + " " + this.context.getString(R.string.EL2);
-            }
-            else if(name.get(1).toString().matches("P")){
-                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.EL2);
-            }
-            else if(name.get(1).toString().matches("M")){
-                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.EL2);
-            }
-            else if(name.get(1).toString().matches("Z")){
-                rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.EL2);
-            }
-        }
-        if(str.startsWith("EL3")){
-            if(name.get(2).toString().matches("T")){
-                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.EL3);
-            }
-            else if(name.get(2).toString().matches("H")){
-                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.EL3);
-            }
-            else if(name.get(2).toString().matches("C") ||
-                    name.get(2).toString().matches("D") ||
-                    name.get(2).toString().matches("E")){
-                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.EL3);
-            }
-            else if(name.get(2).toString().matches("I")){
-                rename = this.context.getString(R.string.I3) + " " + this.context.getString(R.string.EL3);
-            }
-            else if(name.get(2).toString().matches("P")){
-                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.EL3);
-            }
-            else if(name.get(2).toString().matches("M")){
-                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.EL3);
-            }
-            else if(name.get(2).toString().matches("Z")){
-                rename = this.context.getString(R.string.percent) + " " + this.context.getString(R.string.EL3);
-            }
-        }
-        if(str.startsWith("ADR")){
+        }else if(str.startsWith("ADR")){
             rename = this.context.getString(R.string.ADR);
-        }
-        if(str.startsWith("DP1")){
-            if(name.get(0).toString().matches("T")){
+        }else if(str.startsWith("DP")){
+            int get = Integer.valueOf(str.substring(2, 3));
+            if(name.get((get - 1)).toString().matches("T")){
                 rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.DP1);
             }
-            else if(name.get(0).toString().matches("H")){
+            else if(name.get((get - 1)).toString().matches("H")){
                 rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.DP1);
             }
-            else if(name.get(0).toString().matches("C") ||
-                    name.get(0).toString().matches("D") ||
-                    name.get(0).toString().matches("E")){
+            else if(name.get((get - 1)).toString().matches("C") ||
+                    name.get((get - 1)).toString().matches("D") ||
+                    name.get((get - 1)).toString().matches("E")){
                 rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.DP1);
             }
-            else if(name.get(0).toString().matches("I")){
+            else if(name.get((get - 1)).toString().matches("I")){
                 rename = this.context.getString(R.string.I1) + " " + this.context.getString(R.string.DP1);
             }
-            else if(name.get(0).toString().matches("P")){
+            else if(name.get((get - 1)).toString().matches("P")){
                 rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.DP1);
             }
-            else if(name.get(0).toString().matches("M")){
+            else if(name.get((get - 1)).toString().matches("M")){
                 rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.DP1);
             }
-        }
-        if(str.startsWith("DP2")){
-            if(name.get(1).toString().matches("T")){
-                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.DP2);
-            }
-            else if(name.get(1).toString().matches("H")){
-                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.DP2);
-            }
-            else if(name.get(1).toString().matches("C") ||
-                    name.get(1).toString().matches("D") ||
-                    name.get(1).toString().matches("E")){
-                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.DP2);
-            }
-            else if(name.get(1).toString().matches("I")){
-                rename = this.context.getString(R.string.I2) + " " + this.context.getString(R.string.DP2);
-            }
-            else if(name.get(1).toString().matches("P")){
-                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.DP2);
-            }
-            else if(name.get(1).toString().matches("M")){
-                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.DP2);
-            }
-        }
-        if(str.startsWith("DP3")){
-            if(name.get(2).toString().matches("T")){
-                rename = this.context.getString(R.string.T) + " " + this.context.getString(R.string.DP3);
-            }
-            else if(name.get(2).toString().matches("H")){
-                rename = this.context.getString(R.string.H) + " " + this.context.getString(R.string.DP3);
-            }
-            else if(name.get(2).toString().matches("C") ||
-                    name.get(2).toString().matches("D") ||
-                    name.get(2).toString().matches("E")){
-                rename = this.context.getString(R.string.C) + " " + this.context.getString(R.string.DP3);
-            }
-            else if(name.get(2).toString().matches("I")){
-                rename = this.context.getString(R.string.I3) + " " + this.context.getString(R.string.DP3);
-            }
-            else if(name.get(2).toString().matches("P")){
-                rename = this.context.getString(R.string.P) + " " + this.context.getString(R.string.DP3);
-            }
-            else if(name.get(2).toString().matches("M")){
-                rename = this.context.getString(R.string.M) + " " + this.context.getString(R.string.DP3);
-            }
-        }
-        /*if(str.startsWith("INTER")){
+        }else if(str.startsWith("INTER")){
             rename = this.context.getString(R.string.INTER);
+        }else if(str.startsWith("SPK")) {
+            rename = this.context.getString(R.string.SPK);
+        }else if(str.startsWith("RL")){
+            char s = str.charAt(2);
+            rename = this.context.getString(R.string.RL) + s;
+        }else if(str.startsWith("PR")){
+            rename = this.context.getString(R.string.percentadjustment);
+        }
+        /*if(str.startsWith("LOG")){
+            rename = this.context.getString(R.string.LOG);
         }
         if(str.startsWith("IH1")){
             rename = this.context.getString(R.string.IH1);
@@ -266,19 +138,6 @@ public class GetDeviceName {
         }
         if(str.startsWith("IL3")){
             rename = this.context.getString(R.string.IL3);
-        }*/
-        if(str.startsWith("SPK")){
-            rename = this.context.getString(R.string.SPK);
-        }
-        if(str.startsWith("RL")){
-            char s = str.charAt(2);
-            rename = this.context.getString(R.string.RL) + s;
-        }
-        if(str.startsWith("PR")){
-            rename = this.context.getString(R.string.percentadjustment);
-        }
-        /*if(str.startsWith("LOG")){
-            rename = this.context.getString(R.string.LOG);
         }*/
         return rename;
     }

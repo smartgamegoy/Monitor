@@ -38,6 +38,9 @@
     <string name="I1">第一排</string>
     <string name="I2">第二排</string>
     <string name="I3">第三排</string>
+    <string name="PV1">补正</string>
+    <string name="PV2">补正</string>
+    <string name="PV3">补正</string>
     <string name="EH1">上限警报</string>
     <string name="EH2">上限警报</string>
     <string name="EH3">上限警报</string>
@@ -114,4 +117,13 @@
     <string name="name">名称</string>
     <string name="addblank">不可为空!</string>
     <string name="same">名称重复</string>
+    <string name="INTER">记录间隔</string>
+    <string name="interval">时间间隔</string>
+    <string name="hour">小时:</string>
+    <string name="minute">分钟:</string>
+    <string name="seconds">秒:</string>
+    <string name="description">时间间隔须为60秒到1小时之间</string>
+    <string name="warning">警告!</string>
+    <string name="reinterval">即将停止纪录,并清除全部纪录资料</string>
+    <string name="intervalset">设定中…</string>
 </resources>

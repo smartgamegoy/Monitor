@@ -39,6 +39,7 @@ public class InputDialog {
     private LogMessage logMessage = new LogMessage();
     private List<String> nameList;
     private ArrayList<String> selectItem, deviceNumList;
+    private PV pv = new PV();
     private PR pr = new PR();
     private EH eh = new EH();
     private EL el = new EL();
@@ -86,6 +87,54 @@ public class InputDialog {
             editText.setHint(" " + context.getString(R.string.changename));
             editText.setInputType(InputType.TYPE_CLASS_TEXT);
             editText.addTextChangedListener(new EditChangeName(editText));
+        } else if (chose.contains("PV")) {
+            int get = Integer.valueOf(String.valueOf(chose.charAt(2)));
+            if (nameList.get(get - 1).matches("T")) {
+                editText.setHint(" - 5 ~ 5");
+                editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED |
+                        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                editText.addTextChangedListener(new EditChangeNum(editText, "T"));
+            } else if (nameList.get(get - 1).matches("H")) {
+                editText.setHint(" - 10 ~ 10");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "H"));
+            } else if (nameList.get(get - 1).matches("C")) {
+                editText.setHint(" - 200 ~ 200");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "C"));
+            } else if (nameList.get(get - 1).matches("D")) {
+                editText.setHint(" - 300 ~ 300");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "D"));
+            } else if (nameList.get(get - 1).matches("E")) {
+                editText.setHint(" - 500 ~ 500");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "E"));
+            } else if (nameList.get(get - 1).matches("M")) {
+                editText.setHint(" - 100 ~ 100");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "M"));
+            } else if (nameList.get(get - 1).matches("Z")) {
+                editText.setHint(" - 10 ~ 10");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "Z"));
+            } else if (nameList.get(get - 1).matches("W")) {
+                editText.setHint(" - 5 ~ 5");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "W"));
+            } else if (nameList.get(get - 1).matches("P")) {
+                editText.setHint(" - 10 ~ 10");
+                editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.addTextChangedListener(new EditChangeNum(editText, "P"));
+            }
         } else if (chose.contains("EH") || chose.contains("EL")) {
             int get = Integer.valueOf(String.valueOf(chose.charAt(2)));
             if (nameList.get(get - 1).matches("T")) {
@@ -128,7 +177,7 @@ public class InputDialog {
                 editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                 editText.addTextChangedListener(new EditChangeNum(editText, "W"));
-            }else if (nameList.get(get - 1).matches("P")) {
+            } else if (nameList.get(get - 1).matches("P")) {
                 editText.setHint(" 0 ~ 1000");
                 editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -158,11 +207,15 @@ public class InputDialog {
             String gets = editText.getText().toString().trim();
             logMessage.showmessage(TAG, "chose = " + chose);
             if (!gets.matches("") && !gets.matches("-")) {
-                if(chose.contains("NAME")){
+                if (chose.contains("NAME")) {
                     String out = "NAME" + gets;
                     sendValue.send(out);
                     processing.dismiss();
-                }else if(chose.contains("EH")){
+                }else if(chose.contains("PV")){
+                    float t = Float.valueOf(gets);
+                    logMessage.showmessage(TAG, "selectItem = " + selectItem);
+                    pv.todo(t, chose, processing, mBluetoothLeService, gets, nameList);
+                } else if (chose.contains("EH")) {
                     float t = Float.valueOf(gets);
                     int i = selectItem.indexOf(chose);
                     logMessage.showmessage(TAG, "selectItem = " + selectItem);
@@ -173,7 +226,7 @@ public class InputDialog {
                     } else {
                         Toast.makeText(context, context.getString(R.string.max), Toast.LENGTH_SHORT).show();
                     }
-                }else if(chose.contains("EL")){
+                } else if (chose.contains("EL")) {
                     float t = Float.valueOf(gets);
                     int i = selectItem.indexOf(chose);
                     String value = deviceNumList.get(i - 1);
@@ -183,11 +236,10 @@ public class InputDialog {
                     } else {
                         Toast.makeText(context, context.getString(R.string.min), Toast.LENGTH_SHORT).show();
                     }
-                }else if(chose.contains("PR")){
+                } else if (chose.contains("PR")) {
                     float t = Float.valueOf(gets);
                     pr.todo(t, chose, processing, mBluetoothLeService);
-                }
-                else if(chose.contains("ADR")){
+                } else if (chose.contains("ADR")) {
                     float t = Float.valueOf(gets);
                     adr.todo(t, chose, processing, mBluetoothLeService);
                 }
