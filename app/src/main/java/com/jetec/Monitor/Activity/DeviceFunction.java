@@ -1,5 +1,6 @@
 package com.jetec.Monitor.Activity;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -30,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import com.jetec.Monitor.Dialog.*;
 import com.jetec.Monitor.Listener.GetLoadList;
 import com.jetec.Monitor.Listener.LoadListListener;
@@ -39,15 +42,18 @@ import com.jetec.Monitor.SupportFunction.CheckDeviceName;
 import com.jetec.Monitor.SupportFunction.GetDeviceName;
 import com.jetec.Monitor.SupportFunction.GetDeviceNum;
 import com.jetec.Monitor.SupportFunction.LogMessage;
-import com.jetec.Monitor.SupportFunction.Parase;
 import com.jetec.Monitor.SupportFunction.SQL.DataListSQL;
 import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SupportFunction.Value;
 import com.jetec.Monitor.SupportFunction.ViewAdapter.Function;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoadListListener {
@@ -59,6 +65,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private BluetoothLeService mBluetoothLeService;
     private boolean s_connect = false;
     private Intent intents;
+    private NavigationView navigationView;
     private String BID, modelName;
     private ArrayList<String> selectItem;
     private ArrayList<String> reList;
@@ -69,11 +76,11 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private SpkDialog spkDialog = new SpkDialog();
     private RLDialog rlDialog;
     private CheckDeviceName checkDeviceName = new CheckDeviceName();
-    private DataListSQL dataListSQL= new DataListSQL(this);
+    private DataListSQL dataListSQL = new DataListSQL(this);
     private GetLoadList getLoadList = new GetLoadList();
-    private Parase parase = new Parase();
     private Handler mHandler;
     private SendValue sendValue;
+    private int datacount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +151,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         if (!Value.downlog) {
@@ -254,6 +261,10 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                         deviceNumList.set(0, text.substring(4));
                         logMessage.showmessage(TAG, "deviceNumList = " + deviceNumList);
                         function.notifyDataSetChanged();
+                    } else if (text.startsWith("COUNT")) {
+                        String value = text.replace("COUNT", "");
+                        datacount = Integer.valueOf(value);
+                        logMessage.showmessage(TAG, "datacount = " + datacount);
                     }
                 });
             }
@@ -451,7 +462,34 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
             vibrator.vibrate(100);
         } else if (id == R.id.nav_share) {
             vibrator.vibrate(100);
-            
+            if (!Value.downlog) {
+                Value.downlog = true;
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.warning)
+                        .setMessage(R.string.restart)
+                        .setPositiveButton(R.string.butoon_yes, (dialog, which) -> {
+                            navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.end) + getString(R.string.LOG));
+                            sendValue.send("END");
+                            @SuppressLint("SimpleDateFormat")
+                            SimpleDateFormat get_date = new SimpleDateFormat("yyMMdd");
+                            @SuppressLint("SimpleDateFormat")
+                            SimpleDateFormat get_time = new SimpleDateFormat("HHmmss");
+                            Date date = new Date();
+                            String strDate = "DATE" + get_date.format(date);
+                            String strtime = "TIME" + get_time.format(date);
+                            String getinter = reList.get(selectItem.indexOf("INTER"));
+
+
+                        })
+                        .setNegativeButton(R.string.butoon_no, (dialog, which) -> {
+                            vibrator.vibrate(100);
+                        })
+                        .show();
+            } else {
+                Value.downlog = false;
+                navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
+                sendValue.send("END");
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

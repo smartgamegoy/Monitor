@@ -3,6 +3,7 @@ package com.jetec.Monitor.Dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -21,11 +22,14 @@ import android.widget.Toast;
 
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.Service.BluetoothLeService;
+import com.jetec.Monitor.SupportFunction.RunningFlash;
 import com.jetec.Monitor.SupportFunction.Screen;
 import com.jetec.Monitor.SupportFunction.SendValue;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,12 +38,16 @@ import static java.lang.Thread.sleep;
 public class InterDialog {
 
     private boolean c = false;
+    private RunningFlash runningFlash;
+    private Handler handler;
 
     public InterDialog() {
         super();
     }
 
     public void setDialog(Context context, Vibrator vibrator, BluetoothLeService bluetoothLeService, String description) {
+        runningFlash = new RunningFlash(context);
+        handler = new Handler();
         Dialog progressDialog = showDialog(context, vibrator, bluetoothLeService, description);
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
@@ -85,21 +93,19 @@ public class InterDialog {
                             }
                             sum = ihour * 3600 + iminute * 60 + isecond;
                             if (sum <= 3600 && sum >= 60) {
-                                Toast.makeText(context, context.getString(R.string.intervalset), Toast.LENGTH_SHORT).show();
-                                try {
-                                    sendValue.send("END");
-                                    sleep(500);
-                                    sending(String.valueOf(sum), bluetoothLeService);
-                                    sleep(500);
-                                    sendValue.send("START");
-                                    sleep(2000);
-                                    sendValue.send("END");
-                                    progressDialog.dismiss();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
+                                if (!runningFlash.isCheck()) {
+                                    runningFlash.startFlash(context.getString(R.string.intervalset));
                                 }
+                                sendValue.send("END");
+                                List<String> sendlist = new ArrayList<>();
+                                sendlist.clear();
+                                sendlist.add(String.valueOf(sum));
+                                sendlist.add("START");
+                                sendlist.add("END");
+                                int timedelay = 500;
+                                int i = 0;
+                                sendliststr(sendlist, timedelay, i, bluetoothLeService, sendValue);
+                                progressDialog.dismiss();
                             } else {
                                 Toast.makeText(context, description, Toast.LENGTH_SHORT).show();
                             }
@@ -169,7 +175,7 @@ public class InterDialog {
         });
 
         e3.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
-        e3.setHint("30 ~ 59");
+        e3.setHint("1 ~ 59");
         e3.addTextChangedListener(new TextWatcher() {
             int l = 0;    //記錄字串删除字元之前，字串的長度
             int location = 0; //記錄光標位置
@@ -214,5 +220,30 @@ public class InterDialog {
             Log.e(TAG, "sends = " + change);
             bluetoothLeService.writeRXCharacteristic(sends);
         }
+    }
+
+    private void sendliststr(List<String> sendlist, int timedelay, int i, BluetoothLeService bluetoothLeService, SendValue sendValue) {
+        handler.postDelayed(() -> {
+            try {
+                if (i < sendlist.size()) {
+                    if (i == 0) {
+                        sending(sendlist.get(i), bluetoothLeService);
+                    } else {
+                        sendValue.send(sendlist.get(i));
+                    }
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            handler.removeCallbacksAndMessages(null);
+            if((i + 1) == sendlist.size() - 1){
+                sendliststr(sendlist, 2000,(i + 1), bluetoothLeService, sendValue);
+            }
+            else if((i + 1) < sendlist.size()){
+                sendliststr(sendlist, timedelay,(i + 1), bluetoothLeService, sendValue);
+            }else if(i == (sendlist.size() - 1)){
+                runningFlash.closeFlash();
+            }
+        }, timedelay);
     }
 }
