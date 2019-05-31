@@ -1,4 +1,4 @@
-package com.jetec.Monitor.SwitchWL.Dialog;
+package com.jetec.Monitor.Dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -19,40 +19,40 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.jetec.Monitor.R;
+import com.jetec.Monitor.SupportFunction.SQL.DataListSQL;
 import com.jetec.Monitor.SupportFunction.Screen;
-import com.jetec.Monitor.SwitchWL.DeviceList.DataListView;
-import com.jetec.Monitor.SwitchWL.SQL.SQLData;
+import com.jetec.Monitor.SupportFunction.ViewAdapter.DataSaveView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DataDialog {
+public class DataSaveDialog {
 
-    private String TAG = "DataDialog";
+    private String TAG = "DataSaveDialog";
     private ArrayList<HashMap<String, String>> listData;
-    private DataListView dataListView;
+    private DataSaveView dataSaveView;
     private int select_item;
     private Vibrator vibrator;
     private ArrayList<String> SQLdata;
     private View view1;
     private Handler mHandler;
 
-    public DataDialog() {
+    public DataSaveDialog() {
         super();
     }
 
-    public void setDialog(Context context, Vibrator vibrator, String devicename, String saveList, SQLData sqlData) {
+    public void setDialog(Context context, Vibrator vibrator, String devicename, String saveList, DataListSQL dataListSQL) {
         this.vibrator = vibrator;
         listData = new ArrayList<>();
         SQLdata = new ArrayList<>();
         listData.clear();
         SQLdata.clear();
         mHandler = new Handler();
-        Dialog progressDialog = showDialog(context, vibrator, devicename, saveList, sqlData);
+        Dialog progressDialog = showDialog(context, vibrator, devicename, saveList, dataListSQL);
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
     }
 
-    private Dialog showDialog(Context context, Vibrator vibrator, String devicename, String saveList, SQLData sqlData) {
+    private Dialog showDialog(Context context, Vibrator vibrator, String devicename, String saveList, DataListSQL dataListSQL) {
         Screen screen = new Screen(context);
         DisplayMetrics dm = screen.size();
         Dialog progressDialog = new Dialog(context);
@@ -69,7 +69,7 @@ public class DataDialog {
         ListView list = v.findViewById(R.id.datalist1);
         TextView t1 = v.findViewById(R.id.no_list);
 
-        setStatus(context, sqlData, list, t1, devicename);
+        setStatus(context, dataListSQL, list, t1, devicename);
 
         close.setOnClickListener(v14 -> {
             vibrator.vibrate(100);
@@ -78,10 +78,10 @@ public class DataDialog {
 
         update.setOnClickListener(v1 -> {
             vibrator.vibrate(100);
-            if (sqlData.getCount() != 0) {
+            if (dataListSQL.getCount() != 0) {
                 if (select_item != -1) {
-                    UpdateDialog updateDialog = new UpdateDialog();
-                    updateDialog.setDialog(context, vibrator, select_item, SQLdata, list, sqlData, devicename);
+                    UpdateDataDialog updateDateDialog = new UpdateDataDialog();
+                    updateDateDialog.setDialog(context, vibrator, select_item, SQLdata, list, dataListSQL, devicename);
                 }
             }
         });
@@ -92,18 +92,18 @@ public class DataDialog {
             if (listname.matches(""))
                 Toast.makeText(context, context.getString(R.string.addblank), Toast.LENGTH_SHORT).show();
             else {
-                if (sqlData.getCount(listname, devicename) == 0) {
-                    sqlData.insert(saveList, devicename, listname);
+                if (dataListSQL.getCount(listname, devicename) == 0) {
+                    dataListSQL.insert(saveList, devicename, listname);
                     SQLdata.clear();
                     list.setVisibility(View.VISIBLE);
                     t1.setVisibility(View.GONE);
                     name.setText("");
                     mHandler.postDelayed(() -> {
-                        listData = sqlData.fillList(devicename);
+                        listData = dataListSQL.fillList(devicename);
                         Log.e(TAG, "listData = " + listData);
-                        dataListView = new DataListView(context, listData);
-                        list.setAdapter(dataListView);
-                        setStatus(context, sqlData, list, t1, devicename);
+                        dataSaveView = new DataSaveView(context, listData);
+                        list.setAdapter(dataSaveView);
+                        setStatus(context, dataListSQL, list, t1, devicename);
                     }, 100);
                 } else {
                     Toast.makeText(context, context.getString(R.string.same), Toast.LENGTH_SHORT).show();
@@ -115,18 +115,18 @@ public class DataDialog {
             vibrator.vibrate(100);
             Log.e(TAG, "select = " + select_item);
             if (select_item != -1) {
-                sqlData.delete(Integer.valueOf(SQLdata.get(select_item)));
+                dataListSQL.delete(Integer.valueOf(SQLdata.get(select_item)));
                 SQLdata.remove(select_item);
                 Log.e(TAG, "SQLdata = " + SQLdata);
-                if (sqlData.getCount() == 0) {
+                if (dataListSQL.getCount() == 0) {
                     list.setVisibility(View.GONE);
                     t1.setVisibility(View.VISIBLE);
                     select_item = -1;
                 } else {
-                    if (sqlData.modelsearch(devicename) > 0) {
-                        listData = sqlData.fillList(devicename);
-                        dataListView = new DataListView(context, listData);
-                        list.setAdapter(dataListView);
+                    if (dataListSQL.modelsearch(devicename) > 0) {
+                        listData = dataListSQL.fillList(devicename);
+                        dataSaveView = new DataSaveView(context, listData);
+                        list.setAdapter(dataSaveView);
                         select_item = -1;
                     } else {
                         list.setVisibility(View.GONE);
@@ -180,18 +180,18 @@ public class DataDialog {
         }
     };
 
-    private void setStatus(Context context, SQLData sqlData, ListView list, TextView t1, String devicename){
-        if (sqlData.getCount() == 0) {
+    private void setStatus(Context context, DataListSQL dataListSQL, ListView list, TextView t1, String devicename){
+        if (dataListSQL.getCount() == 0) {
             list.setVisibility(View.GONE);
             t1.setVisibility(View.VISIBLE);
         } else {
-            if (sqlData.modelsearch(devicename) > 0) {
+            if (dataListSQL.modelsearch(devicename) > 0) {
                 select_item = -1;
                 list.setVisibility(View.VISIBLE);
                 t1.setVisibility(View.GONE);
-                listData = sqlData.fillList(devicename);
-                dataListView = new DataListView(context, listData);
-                list.setAdapter(dataListView);
+                listData = dataListSQL.fillList(devicename);
+                dataSaveView = new DataSaveView(context, listData);
+                list.setAdapter(dataSaveView);
                 list.setOnItemClickListener(mListClickListener);
             } else {
                 list.setVisibility(View.GONE);

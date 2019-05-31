@@ -2,6 +2,7 @@ package com.jetec.Monitor.SupportFunction;
 
 import com.jetec.Monitor.Service.BluetoothLeService;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class SendValue {
 
@@ -14,15 +15,11 @@ public class SendValue {
 
     public void send(String str){
         byte[] sends;
-        try {
-            String TAG = "SendValue";
-            logMessage.showmessage(TAG, "bluetoothLeService = " + bluetoothLeService);
-            sends = str.getBytes("UTF-8");
-            logMessage.showmessage(TAG, "sends = " + str);
-            bluetoothLeService.writeRXCharacteristic(sends);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String TAG = "SendValue";
+        logMessage.showmessage(TAG, "bluetoothLeService = " + bluetoothLeService);
+        sends = str.getBytes(StandardCharsets.UTF_8);
+        logMessage.showmessage(TAG, "sends = " + str);
+        bluetoothLeService.writeRXCharacteristic(sends);
     }
 
     public void sendbyte(byte[] strValue){

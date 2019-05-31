@@ -1,4 +1,4 @@
-package com.jetec.Monitor.SwitchWL.Dialog;
+package com.jetec.Monitor.Dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -15,39 +15,40 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.jetec.Monitor.Listener.GetLoadList;
 import com.jetec.Monitor.R;
+import com.jetec.Monitor.SupportFunction.SQL.DataListSQL;
 import com.jetec.Monitor.SupportFunction.Screen;
-import com.jetec.Monitor.SwitchWL.DeviceList.DataListView;
-import com.jetec.Monitor.SwitchWL.Listener.GetStatus;
-import com.jetec.Monitor.SwitchWL.SQL.SQLData;
+import com.jetec.Monitor.SupportFunction.ViewAdapter.DataSaveView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LoadDialog {
+public class LoadListDialog {
 
-    private String TAG = "LoadDialog";
+    private String TAG = "LoadListDialog";
     private Vibrator vibrator;
     private int select_item;
     private View view1;
     private ArrayList<HashMap<String, String>> listData;
     private ArrayList<String> SQLdata;
 
-    public LoadDialog(){
+    public LoadListDialog(){
         super();
     }
 
-    public void setDialog(Context context, Vibrator vibrator, GetStatus getStatus, SQLData sqlData, String devicename){
+    public void setDialog(Context context, Vibrator vibrator, GetLoadList getLoadList, DataListSQL dataListSQL, String devicename){
         this.vibrator = vibrator;
         listData = new ArrayList<>();
         SQLdata = new ArrayList<>();
         listData.clear();
         SQLdata.clear();
-        Dialog progressDialog = showDialog(context, vibrator, getStatus, sqlData, devicename);
+        Dialog progressDialog = showDialog(context, vibrator, getLoadList, dataListSQL, devicename);
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
     }
 
-    private Dialog showDialog(Context context, Vibrator vibrator, GetStatus getStatus, SQLData sqlData, String devicename){
+    private Dialog showDialog(Context context, Vibrator vibrator, GetLoadList getLoadList, DataListSQL dataListSQL, String devicename){
         Screen screen = new Screen(context);
         DisplayMetrics dm = screen.size();
         Dialog progressDialog = new Dialog(context);
@@ -61,17 +62,17 @@ public class LoadDialog {
         ListView list = v.findViewById(R.id.loading);
         TextView t1 = v.findViewById(R.id.no_list);
 
-        if (sqlData.getCount() == 0) {
+        if (dataListSQL.getCount() == 0) {
             list.setVisibility(View.GONE);
             t1.setVisibility(View.VISIBLE);
         } else {
-            if (sqlData.modelsearch(devicename) > 0) {
+            if (dataListSQL.modelsearch(devicename) > 0) {
                 list.setVisibility(View.VISIBLE);
                 t1.setVisibility(View.GONE);
                 select_item = -1;
-                listData = sqlData.fillList(devicename);
-                DataListView dataListView = new DataListView(context, listData);
-                list.setAdapter(dataListView);
+                listData = dataListSQL.fillList(devicename);
+                DataSaveView dataSaveView = new DataSaveView(context, listData);
+                list.setAdapter(dataSaveView);
                 list.setOnItemClickListener(mLoadClickListener);
             } else {
                 list.setVisibility(View.GONE);
@@ -88,12 +89,12 @@ public class LoadDialog {
             vibrator.vibrate(100);
             if(select_item != -1) {
                 vibrator.vibrate(100);
-                listData = sqlData.fillList(devicename);
+                listData = dataListSQL.fillList(devicename);
                 HashMap<String, String> getitem = new HashMap<>();
                 getitem.clear();
                 getitem = listData.get(select_item);
                 String savelist = getitem.get("savelist");
-                getStatus.readytointent(savelist);
+                getLoadList.readytointent(savelist);
                 progressDialog.dismiss();
             }
         });

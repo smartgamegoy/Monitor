@@ -41,7 +41,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.ScanRecord.DeviceParse;
 import com.jetec.Monitor.SupportFunction.*;
@@ -49,9 +48,7 @@ import com.jetec.Monitor.Service.BluetoothLeService;
 import com.jetec.Monitor.SupportFunction.SQL.AlertRecord;
 import com.jetec.Monitor.SwitchWL.SwitchActivity;
 import com.jetec.Monitor.Thread.*;
-
 import org.json.JSONArray;
-
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +58,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import static java.lang.Thread.sleep;
 
 public class FirstActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {

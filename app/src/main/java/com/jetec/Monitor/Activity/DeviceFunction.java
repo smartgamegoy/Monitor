@@ -4,12 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
@@ -28,24 +30,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.jetec.Monitor.Dialog.*;
+import com.jetec.Monitor.Listener.GetLoadList;
+import com.jetec.Monitor.Listener.LoadListListener;
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.Service.BluetoothLeService;
 import com.jetec.Monitor.SupportFunction.CheckDeviceName;
 import com.jetec.Monitor.SupportFunction.GetDeviceName;
 import com.jetec.Monitor.SupportFunction.GetDeviceNum;
 import com.jetec.Monitor.SupportFunction.LogMessage;
+import com.jetec.Monitor.SupportFunction.Parase;
+import com.jetec.Monitor.SupportFunction.SQL.DataListSQL;
+import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SupportFunction.Value;
 import com.jetec.Monitor.SupportFunction.ViewAdapter.Function;
-
+import org.json.JSONArray;
+import org.json.JSONException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.jetec.Monitor.Activity.FirstActivity.makeGattUpdateIntentFilter;
-
-public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoadListListener {
 
     private String TAG = "DeviceFunction";
     private LogMessage logMessage = new LogMessage();
@@ -64,6 +69,11 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private SpkDialog spkDialog = new SpkDialog();
     private RLDialog rlDialog;
     private CheckDeviceName checkDeviceName = new CheckDeviceName();
+    private DataListSQL dataListSQL= new DataListSQL(this);
+    private GetLoadList getLoadList = new GetLoadList();
+    private Parase parase = new Parase();
+    private Handler mHandler;
+    private SendValue sendValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +97,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
 
     private void ConfigurationChange() {
 
+        mHandler = new Handler();
         selectItem = new ArrayList<>();
         reList = new ArrayList<>();
         ArrayList<String> dataList = new ArrayList<>();
@@ -257,6 +268,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                 logMessage.showmessage(TAG, "初始化失敗");
             }
             mBluetoothLeService.connect(BID);
+            sendValue = new SendValue(mBluetoothLeService);
             logMessage.showmessage(TAG, "進入連線");
         }
 
@@ -265,6 +277,44 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
             logMessage.showmessage(TAG, "失去連線端");
         }
     };
+
+    public static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
+    }
+
+    private void saveList() {
+        String devicename = Value.device;
+        JSONArray savejson = new JSONArray(reList);
+        logMessage.showmessage(TAG, "devicename = " + devicename);
+        logMessage.showmessage(TAG, "savejson = " + savejson.toString());
+        DataSaveDialog dataSaveDialog = new DataSaveDialog();
+        dataSaveDialog.setDialog(this, vibrator, devicename, savejson.toString(), dataListSQL);
+    }
+
+    private void loadList() {
+        String devicename = Value.device;
+        getLoadList.setListener(this);
+        LoadListDialog loadListDialog = new LoadListDialog();
+        loadListDialog.setDialog(this, vibrator, getLoadList, dataListSQL, devicename);
+    }
+
+    private void sendloadlist(JSONArray loadlist, int count) {
+        mHandler.postDelayed(() -> {
+            try {
+                String str = loadlist.get(count).toString();
+                sendValue.send(str);
+                mHandler.removeCallbacksAndMessages(null);
+                sendloadlist(loadlist, (count + 1));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }, 100);
+    }
 
     public boolean onKeyDown(int key, KeyEvent event) {
         switch (key) {
@@ -391,20 +441,34 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
         int id = item.getItemId();
         if (id == R.id.savedialog) {
             vibrator.vibrate(100);
-            //saveList();
+            saveList();
         } else if (id == R.id.loadbar) {
             vibrator.vibrate(100);
-            //loadList();
+            loadList();
         } else if (id == R.id.datadownload) {
             vibrator.vibrate(100);
         } else if (id == R.id.showdialog) {
             vibrator.vibrate(100);
         } else if (id == R.id.nav_share) {
             vibrator.vibrate(100);
+            
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void update(String savelist) {
+        try {
+            logMessage.showmessage(TAG, "reList = " + reList);
+            logMessage.showmessage(TAG, "savelist = " + savelist);
+            JSONArray listjson = new JSONArray(savelist);
+            int count = 0;
+            sendloadlist(listjson, count);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

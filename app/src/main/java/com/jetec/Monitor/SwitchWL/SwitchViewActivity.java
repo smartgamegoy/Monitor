@@ -29,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.jetec.Monitor.Activity.StartActivity;
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.Service.BluetoothLeService;
@@ -45,10 +44,8 @@ import com.jetec.Monitor.SwitchWL.Listener.GetBlueService;
 import com.jetec.Monitor.SwitchWL.Listener.GetStatus;
 import com.jetec.Monitor.SwitchWL.Listener.LoadListener;
 import com.jetec.Monitor.SwitchWL.SQL.SQLData;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -433,11 +430,6 @@ public class SwitchViewActivity extends AppCompatActivity implements NavigationV
             JSONArray listjson = new JSONArray(savelist);
             int count = 1;
             sendloadlist(listjson, count);
-            /*logMessage.showmessage(TAG, "savelist = " + savelist);
-            for(int i = 1; i < listjson.length(); i++){
-                ItemList.set(i, listjson.get(i).toString());
-            }
-            logMessage.showmessage(TAG, "ItemList = " + ItemList);*/
         } catch (JSONException e) {
             e.printStackTrace();
         }
