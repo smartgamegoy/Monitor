@@ -126,5 +126,6 @@
     <string name="warning">警告!</string>
     <string name="reinterval">即将停止纪录,并清除全部纪录资料</string>
     <string name="restart">重新开始纪录,並清除全部紀錄資料</string>
+    <string name="stoprecord">即将停止纪录,并开始下载</string>
     <string name="intervalset">设定中…</string>
 </resources>

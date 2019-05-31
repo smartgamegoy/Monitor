@@ -124,7 +124,8 @@
     <string name="seconds">Seconds:</string>
     <string name="description">The time interval must be between 60 seconds and 1 hour</string>
     <string name="warning">Warning!</string>
-    <string name="reinterval">It will stop records and clean all records data.</string>
+    <string name="reinterval">It will stop the record and clean all records data.</string>
     <string name="restart">It will restart records and clean all records data.</string>
+    <string name="stoprecord">It will stop the record and start downloading.</string>
     <string name="intervalset">Setting…</string>
 </resources>

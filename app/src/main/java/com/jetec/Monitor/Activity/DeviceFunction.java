@@ -42,6 +42,7 @@ import com.jetec.Monitor.SupportFunction.CheckDeviceName;
 import com.jetec.Monitor.SupportFunction.GetDeviceName;
 import com.jetec.Monitor.SupportFunction.GetDeviceNum;
 import com.jetec.Monitor.SupportFunction.LogMessage;
+import com.jetec.Monitor.SupportFunction.RunningFlash;
 import com.jetec.Monitor.SupportFunction.SQL.DataListSQL;
 import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SupportFunction.Value;
@@ -54,6 +55,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoadListListener {
@@ -78,7 +80,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private CheckDeviceName checkDeviceName = new CheckDeviceName();
     private DataListSQL dataListSQL = new DataListSQL(this);
     private GetLoadList getLoadList = new GetLoadList();
-    private Handler mHandler;
+    private Handler mHandler, startlogHandler;
     private SendValue sendValue;
     private int datacount;
 
@@ -105,6 +107,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private void ConfigurationChange() {
 
         mHandler = new Handler();
+        startlogHandler = new Handler();
         selectItem = new ArrayList<>();
         reList = new ArrayList<>();
         ArrayList<String> dataList = new ArrayList<>();
@@ -327,6 +330,19 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
         }, 100);
     }
 
+    private void startLog(List<String> sendLogList, int i, RunningFlash runningFlash) {
+        startlogHandler.postDelayed(() -> {
+            if (i < sendLogList.size()) {
+                sendValue.send(sendLogList.get(i));
+                startlogHandler.removeCallbacksAndMessages(null);
+                startLog(sendLogList, (i + 1), runningFlash);
+            } else {
+                startlogHandler.removeCallbacksAndMessages(null);
+                runningFlash.closeFlash();
+            }
+        }, 500);
+    }
+
     public boolean onKeyDown(int key, KeyEvent event) {
         switch (key) {
             case KeyEvent.KEYCODE_SEARCH:
@@ -458,6 +474,18 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
             loadList();
         } else if (id == R.id.datadownload) {
             vibrator.vibrate(100);
+            new AlertDialog.Builder(DeviceFunction.this)
+                    .setTitle(R.string.warning)
+                    .setMessage(R.string.stoprecord)
+                    .setPositiveButton(R.string.butoon_yes, (dialog, which) -> {
+                        Value.downlog = false;
+                        navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
+                        sendValue.send("END");
+                    })
+                    .setNegativeButton(R.string.butoon_no, (dialog, which) -> {
+                        Log.e(TAG, "取消下載");
+                    })
+                    .show();
         } else if (id == R.id.showdialog) {
             vibrator.vibrate(100);
         } else if (id == R.id.nav_share) {
@@ -477,9 +505,18 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                             Date date = new Date();
                             String strDate = "DATE" + get_date.format(date);
                             String strtime = "TIME" + get_time.format(date);
-                            String getinter = reList.get(selectItem.indexOf("INTER"));
-
-
+                            String getinter = reList.get(selectItem.indexOf("INTER") - 1);
+                            List<String> sendLogList = new ArrayList<>();
+                            sendLogList.clear();
+                            sendLogList.add(strDate);
+                            sendLogList.add(strtime);
+                            sendLogList.add(getinter);
+                            sendLogList.add("START");
+                            RunningFlash runningFlash = new RunningFlash(this);
+                            if (!runningFlash.isCheck()) {
+                                runningFlash.startFlash(getString(R.string.intervalset));
+                            }
+                            startLog(sendLogList, 0, runningFlash);
                         })
                         .setNegativeButton(R.string.butoon_no, (dialog, which) -> {
                             vibrator.vibrate(100);
