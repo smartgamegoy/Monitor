@@ -32,8 +32,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.jetec.Monitor.Dialog.*;
+import com.jetec.Monitor.Listener.DownloadLogListener;
+import com.jetec.Monitor.Listener.GetDownloadLog;
 import com.jetec.Monitor.Listener.GetLoadList;
 import com.jetec.Monitor.Listener.LoadListListener;
 import com.jetec.Monitor.R;
@@ -47,10 +48,8 @@ import com.jetec.Monitor.SupportFunction.SQL.DataListSQL;
 import com.jetec.Monitor.SupportFunction.SendValue;
 import com.jetec.Monitor.SupportFunction.Value;
 import com.jetec.Monitor.SupportFunction.ViewAdapter.Function;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,7 +57,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoadListListener {
+public class DeviceFunction extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        LoadListListener, DownloadLogListener {
 
     private String TAG = "DeviceFunction";
     private LogMessage logMessage = new LogMessage();
@@ -80,9 +80,10 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private CheckDeviceName checkDeviceName = new CheckDeviceName();
     private DataListSQL dataListSQL = new DataListSQL(this);
     private GetLoadList getLoadList = new GetLoadList();
+    private GetDownloadLog getDownloadLog = new GetDownloadLog();
     private Handler mHandler, startlogHandler;
     private SendValue sendValue;
-    private int datacount;
+    private int datacount, sc = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
 
     private void ConfigurationChange() {
 
+        getDownloadLog.setListener(this);
         mHandler = new Handler();
         startlogHandler = new Handler();
         selectItem = new ArrayList<>();
@@ -268,6 +270,28 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                         String value = text.replace("COUNT", "");
                         datacount = Integer.valueOf(value);
                         logMessage.showmessage(TAG, "datacount = " + datacount);
+                        if(Value.downloading){
+                            sendValue.send("DOWNLOAD");
+                            Value.downloading = false;
+                        }
+                    }else if(text.startsWith("END")){
+                        if(Value.downloading){
+                            sendValue.send("Delay00025");
+                        }
+                    }else {
+                        StringBuilder hex = new StringBuilder(txValue.length * 2);
+                        // the data appears to be there backwards
+                        for (byte aData : txValue) {
+                            hex.append(String.format("%02X", aData));
+                        }
+                        String gethex = hex.toString();
+                        logMessage.showmessage(TAG, "gethex = " + gethex);
+                        if(gethex.substring(0, 2).matches("09")){
+                            getDownloadLog.addLogList(gethex);
+                        }
+                        else if(gethex.matches("4F564552")){    //byte[] over = {0x4F, 0x56, 0x45, 52}
+                            getDownloadLog.getValue();
+                        }
                     }
                 });
             }
@@ -361,7 +385,6 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
 
     public void Service_close() {
         if (mBluetoothLeService == null) {
-            Log.e(TAG, "masaga");
             return;
         }
         mBluetoothLeService.disconnect();
@@ -479,7 +502,9 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                     .setMessage(R.string.stoprecord)
                     .setPositiveButton(R.string.butoon_yes, (dialog, which) -> {
                         Value.downlog = false;
+                        Value.downloading = true;
                         navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
+                        getDownloadLog.clearList();
                         sendValue.send("END");
                     })
                     .setNegativeButton(R.string.butoon_no, (dialog, which) -> {
@@ -491,11 +516,11 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
         } else if (id == R.id.nav_share) {
             vibrator.vibrate(100);
             if (!Value.downlog) {
-                Value.downlog = true;
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.warning)
                         .setMessage(R.string.restart)
                         .setPositiveButton(R.string.butoon_yes, (dialog, which) -> {
+                            Value.downlog = true;
                             navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.end) + getString(R.string.LOG));
                             sendValue.send("END");
                             @SuppressLint("SimpleDateFormat")
@@ -510,7 +535,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                             sendLogList.clear();
                             sendLogList.add(strDate);
                             sendLogList.add(strtime);
-                            sendLogList.add(getinter);
+                            sendLogList.add("INTER00020");  //getinter
                             sendLogList.add("START");
                             RunningFlash runningFlash = new RunningFlash(this);
                             if (!runningFlash.isCheck()) {
