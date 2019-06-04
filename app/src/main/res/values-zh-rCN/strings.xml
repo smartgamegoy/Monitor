@@ -128,4 +128,6 @@
     <string name="restart">重新开始纪录,並清除全部紀錄資料</string>
     <string name="stoprecord">即将停止纪录,并开始下载</string>
     <string name="intervalset">设定中…</string>
+    <string name="stable">稳定</string>
+    <string name="highspeed">高速</string>
 </resources>

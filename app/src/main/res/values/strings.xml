@@ -128,4 +128,6 @@
     <string name="restart">It will restart records and clean all records data.</string>
     <string name="stoprecord">It will stop the record and start downloading.</string>
     <string name="intervalset">Setting…</string>
+    <string name="stable">Stable</string>
+    <string name="highspeed">HighSpeed</string>
 </resources>

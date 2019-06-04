@@ -80,10 +80,11 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     private CheckDeviceName checkDeviceName = new CheckDeviceName();
     private DataListSQL dataListSQL = new DataListSQL(this);
     private GetLoadList getLoadList = new GetLoadList();
-    private GetDownloadLog getDownloadLog = new GetDownloadLog();
+    private GetDownloadLog getDownloadLog = new GetDownloadLog(this);
     private Handler mHandler, startlogHandler;
     private SendValue sendValue;
-    private int datacount, sc = 0;
+    private int datacount;
+    private String delay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,10 +274,11 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                         if(Value.downloading){
                             sendValue.send("DOWNLOAD");
                             Value.downloading = false;
+                            getDownloadLog.setRun(getString(R.string.datadownload), datacount);
                         }
                     }else if(text.startsWith("END")){
                         if(Value.downloading){
-                            sendValue.send("Delay00025");
+                            sendValue.send(delay);
                         }
                     }else {
                         StringBuilder hex = new StringBuilder(txValue.length * 2);
@@ -500,14 +502,26 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
             new AlertDialog.Builder(DeviceFunction.this)
                     .setTitle(R.string.warning)
                     .setMessage(R.string.stoprecord)
-                    .setPositiveButton(R.string.butoon_yes, (dialog, which) -> {
+                    .setPositiveButton(R.string.highspeed, (dialog, which) -> {
+                        vibrator.vibrate(100);
                         Value.downlog = false;
                         Value.downloading = true;
                         navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
                         getDownloadLog.clearList();
+                        delay = "Delay00050";
                         sendValue.send("END");
                     })
-                    .setNegativeButton(R.string.butoon_no, (dialog, which) -> {
+                    .setNegativeButton(R.string.stable, (dialog, which) -> {
+                        vibrator.vibrate(100);
+                        Value.downlog = false;
+                        Value.downloading = true;
+                        navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
+                        getDownloadLog.clearList();
+                        delay = "Delay00080";
+                        sendValue.send("END");
+                    })
+                    .setNeutralButton(R.string.butoon_no, (dialog, which) -> {
+                        vibrator.vibrate(100);
                         Log.e(TAG, "取消下載");
                     })
                     .show();

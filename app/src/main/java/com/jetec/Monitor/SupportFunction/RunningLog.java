@@ -12,17 +12,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.jetec.Monitor.R;
-
 import java.util.Objects;
 
-public class RunningFlash {
+public class RunningLog {
 
     private Context context;
     private Dialog processing = null;
     private Screen screen;
     private boolean check = false;
+    private TextView textView;
 
-    public RunningFlash(Context context){
+    public RunningLog(Context context){
         this.context = context;
         screen = new Screen(context);
     }
@@ -38,6 +38,11 @@ public class RunningFlash {
         processing.dismiss();
     }
 
+    @SuppressLint("SetTextI18n")
+    public void setTextView(int size, int count){
+        textView.setText(size + " / " + count);
+    }
+
     private Dialog showDialog(Context context, String message){
         Dialog progressDialog = new Dialog(context);
         progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -49,13 +54,13 @@ public class RunningFlash {
 
         ProgressBar pb_progress_bar = v.findViewById(R.id.progressCircle);
         pb_progress_bar.setVisibility(View.VISIBLE);
-        TextView tv = v.findViewById(R.id.message);
+        textView = v.findViewById(R.id.message);
 
         if (message == null || message.equals("")) {
-            tv.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
         } else {
-            tv.setText(message);
-            tv.setTextColor(context.getResources().getColor(R.color.colorBackground));
+            textView.setText(message);
+            textView.setTextColor(context.getResources().getColor(R.color.colorBackground));
         }
 
         DisplayMetrics dm = screen.size();

@@ -50,7 +50,8 @@ public class Parase {
             return b[0] << 16 | (b[1] & 0xff) << 8 | (b[2] & 0xff);
         else if (b.length == 2)
             return (b[0] & 0xff) << 8 | (b[1] & 0xff);
-        return 0;
+        else
+            return b[0] & 0xff;
     }
 
     public int byteToRealInt(byte[] b) {    //含有負數

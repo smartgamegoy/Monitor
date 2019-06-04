@@ -655,6 +655,12 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                             if(text.startsWith("LOG")){
                                 Value.downlog = text.matches("LOGON");
                             }
+                            else if(text.startsWith("TIME")){
+
+                            }
+                            else if(text.startsWith("DATE")){
+
+                            }
                         }
                     }
                 });
