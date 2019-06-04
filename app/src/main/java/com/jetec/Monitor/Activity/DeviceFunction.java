@@ -166,7 +166,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
             navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.end) + getString(R.string.LOG));
         }
 
-        if (!Value.catchL) {
+        //if (!Value.catchL) {
             navigationView.getMenu().findItem(R.id.datadownload).setEnabled(false);
             SpannableString spanString1 = new SpannableString(navigationView.getMenu().
                     findItem(R.id.datadownload).getTitle().toString());
@@ -182,7 +182,26 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                     findItem(R.id.nav_share).getTitle().toString());
             spanString3.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString3.length(), 0);
             navigationView.getMenu().findItem(R.id.nav_share).setTitle(spanString3);
-        }
+        //}
+
+        /**隱藏下載功能，下載功能未完工
+         *              navigationView.getMenu().findItem(R.id.datadownload).setEnabled(false);
+         *             SpannableString spanString1 = new SpannableString(navigationView.getMenu().
+         *                     findItem(R.id.datadownload).getTitle().toString());
+         *             spanString1.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString1.length(), 0);
+         *             navigationView.getMenu().findItem(R.id.datadownload).setTitle(spanString1);
+         *             navigationView.getMenu().findItem(R.id.showdialog).setEnabled(false);
+         *             SpannableString spanString2 = new SpannableString(navigationView.getMenu().
+         *                     findItem(R.id.showdialog).getTitle().toString());
+         *             spanString2.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString2.length(), 0);
+         *             navigationView.getMenu().findItem(R.id.showdialog).setTitle(spanString2);
+         *             navigationView.getMenu().findItem(R.id.nav_share).setEnabled(false);
+         *             SpannableString spanString3 = new SpannableString(navigationView.getMenu().
+         *                     findItem(R.id.nav_share).getTitle().toString());
+         *             spanString3.setSpan(new ForegroundColorSpan(Color.GRAY), 0, spanString3.length(), 0);
+         *             navigationView.getMenu().findItem(R.id.nav_share).setTitle(spanString3);
+         *
+         */
 
         ListView listname = findViewById(R.id.list_name_function);
 
