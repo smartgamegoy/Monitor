@@ -130,4 +130,8 @@
     <string name="intervalset">Setting…</string>
     <string name="stable">Stable</string>
     <string name="highspeed">HighSpeed</string>
+    <string name="logdata">There is no data!</string>
+    <string name="chosedialog">Dialog</string>
+    <string name="listdialogdata">List data</string>
+    <string name="view">report</string>
 </resources>

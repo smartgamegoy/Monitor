@@ -649,6 +649,9 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                             reList.add(text);
                             dataList.add(checkDeviceNum.get(text));
                             checkList.add(text);
+                            if(text.startsWith("INTER")){
+                                Value.saveInter = text;
+                            }
                         }
                         else if(text.startsWith("COUNT") || text.startsWith("DATE") || text.startsWith("TIME") || text.startsWith("LOG")){
                             checkList.add(text);
@@ -656,10 +659,10 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                                 Value.downlog = text.matches("LOGON");
                             }
                             else if(text.startsWith("TIME")){
-
+                                Value.saveTime = text;
                             }
                             else if(text.startsWith("DATE")){
-
+                                Value.saveDate = text;
                             }
                         }
                     }

@@ -1,9 +1,13 @@
 package com.jetec.Monitor.Listener;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import com.jetec.Monitor.SupportFunction.LogMessage;
 import com.jetec.Monitor.SupportFunction.Parase;
 import com.jetec.Monitor.SupportFunction.RunningLog;
+import com.jetec.Monitor.SupportFunction.Value;
+
 import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +21,7 @@ public class GetDownloadLog {
     private ArrayList<String> logdata, saveList;
     private Context context;
     private RunningLog runningLog;
+    private Handler handler;
     private int count;
 
     public GetDownloadLog(Context context){
@@ -32,7 +37,8 @@ public class GetDownloadLog {
         downloadLogListener = mDownloadLogListener;
     }
 
-    public void setRun(String str, int count){
+    public void setRun(String str, int count, Handler handler){
+        this.handler = handler;
         this.count = count;
         runningLog.startFlash(str);
     }
@@ -70,11 +76,15 @@ public class GetDownloadLog {
                     logMessage.showmessage(TAG, "datavalue = " + datavalue);
                     newList.add(datavalue);
                 }
-                Collections.reverse(newList);
+                Collections.reverse(newList);   //反轉陣列，因資料是從最後一筆傳到第一筆
                 JSONArray jsonArray = new JSONArray(newList);
                 saveList.add(jsonArray.toString());
             }
+            Value.saveLoglIst = saveList;
             runningLog.closeFlash();
+            Message handlerMessage = Message.obtain();
+            handlerMessage.obj = "compelete";
+            handler.sendMessage(handlerMessage);
         }
     };
 
@@ -98,5 +108,17 @@ public class GetDownloadLog {
             value = data;
         }
         return value;
+    }
+
+    public void creatdialog(){
+        if(downloadLogListener != null){
+            downloadLogListener.creatdialog();
+        }
+    }
+
+    public void checklog(){
+        if(downloadLogListener != null){
+            downloadLogListener.checkloglist();
+        }
     }
 }

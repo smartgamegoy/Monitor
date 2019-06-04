@@ -130,4 +130,8 @@
     <string name="intervalset">设定中…</string>
     <string name="stable">稳定</string>
     <string name="highspeed">高速</string>
+    <string name="logdata">尚无资料!</string>
+    <string name="chosedialog">选择图表</string>
+    <string name="listdialogdata">列表</string>
+    <string name="view">查看报表</string>
 </resources>

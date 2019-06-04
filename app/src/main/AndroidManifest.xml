@@ -82,6 +82,13 @@
             tools:ignore="InnerclassSeparator">
         </activity>
         <activity
+            android:name="com.jetec.Monitor.Activity.LogChartActivity"
+            android:theme="@style/nordic_use"
+            android:screenOrientation="user"
+            android:configChanges="orientation|keyboardHidden"
+            tools:ignore="InnerclassSeparator">
+        </activity>
+        <activity
             android:name="com.jetec.Monitor.Activity.PDFView"
             android:theme="@style/nordic_use"
             android:screenOrientation="user"
