@@ -3,6 +3,7 @@ package com.jetec.Monitor.SupportFunction;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Value {
     public static boolean connected = false;
@@ -21,5 +22,5 @@ public class Value {
     public static String saveTime;
     public static String saveInter;
     public final static String E_word = "@JETEC";
-
+    public static List<String> getviewlist;    //選取之連線設備，後續取單位所用
 }

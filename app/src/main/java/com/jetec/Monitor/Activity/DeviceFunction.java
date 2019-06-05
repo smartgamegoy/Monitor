@@ -509,7 +509,6 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
             mBluetoothLeService.stopSelf();
             mBluetoothLeService = null;
         }
-        Value.downlog = false;
     }
 
     @Override

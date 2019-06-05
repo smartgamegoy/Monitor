@@ -23,6 +23,10 @@ import android.widget.Button;
 import android.widget.Toast;
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.SupportFunction.*;
+import com.jetec.Monitor.SupportFunction.SQL.SaveLogSQL;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class StartActivity extends AppCompatActivity {
@@ -119,7 +123,25 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void show_device(){
-        Intent intent = new Intent(this, FirstActivity.class);
+        Intent intent = new Intent(this, FirstActivity.class);  //FirstActivity
+        /*Value.device = "BT-2-THL-0";
+        Value.model_num = 2;
+        Value.model_name = "THL";
+        Value.model_relay = 0;
+        List<String> simulatList = new ArrayList<>();
+        simulatList.clear();
+        simulatList.add("9");
+        simulatList.add("0");
+        simulatList.add("10˚C");
+        simulatList.add("10˚C");
+        simulatList.add("11");
+        simulatList.add("0");
+        simulatList.add("10%");
+        simulatList.add("10%");
+        Value.getviewlist = simulatList;
+        Value.device_name = "研發";
+        //以上均為模擬資料
+        */
         intent.setAction(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivity(intent);
         finish();

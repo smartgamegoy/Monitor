@@ -35,6 +35,7 @@
     <string name="P">壓力</string>
     <string name="M">PM2.5</string>
     <string name="W">溢位</string>
+    <string name="I">4~20mA</string>
     <string name="I1">第一排</string>
     <string name="I2">第二排</string>
     <string name="I3">第三排</string>
@@ -134,4 +135,13 @@
     <string name="chosedialog">選擇圖表</string>
     <string name="listdialogdata">列表</string>
     <string name="view">查看報表</string>
+    <string name="report">資料報表</string>
+    <string name="choose">選擇匯出方式</string>
+    <string name="CSV">CSV</string>
+    <string name="PDF">PDF</string>
+    <string name="chartlist">選擇圖表</string>
+    <string name="Combine">綜合圖表</string>
+    <string name="UL">上限</string>
+    <string name="LL">下限</string>
+    <string name="pdftime">時間</string>
 </resources>

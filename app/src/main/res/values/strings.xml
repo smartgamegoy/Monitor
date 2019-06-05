@@ -23,7 +23,7 @@
     <string name="co">CO</string>
     <string name="co2">CO²</string>
     <string name="pm">PM2.5</string>
-    <string name="percent">proportion</string>
+    <string name="percent">Proportion</string>
     <string name="connecting">Connecting</string>
     <string name="butoon_yes">OK</string>
     <string name="butoon_no">CANCEL</string>
@@ -32,9 +32,10 @@
     <string name="H">Humidity</string>
     <string name="C">CO2</string>
     <string name="CO">CO</string>
-    <string name="P">pressure</string>
+    <string name="P">Pressure</string>
     <string name="M">PM2.5</string>
     <string name="W">overflow</string>
+    <string name="I">4~20mA</string>
     <string name="I1">1st</string>
     <string name="I2">2nd</string>
     <string name="I3">3rd</string>
@@ -134,4 +135,13 @@
     <string name="chosedialog">Dialog</string>
     <string name="listdialogdata">List data</string>
     <string name="view">report</string>
+    <string name="report">Data report</string>
+    <string name="choose">Choose the export method</string>
+    <string name="CSV">CSV</string>
+    <string name="PDF">PDF</string>
+    <string name="chartlist">Chose chart</string>
+    <string name="Combine">Combine chart</string>
+    <string name="UL">upper limit</string>
+    <string name="LL">lower limit</string>
+    <string name="pdftime">Time</string>
 </resources>

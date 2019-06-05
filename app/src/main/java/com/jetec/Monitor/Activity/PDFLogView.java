@@ -12,17 +12,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.jetec.Monitor.R;
 import com.jetec.Monitor.SupportFunction.PDF.MyPrintPdfAdapter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
-public class PDFView extends AppCompatActivity {
+public class PDFLogView extends AppCompatActivity {
 
     private Vibrator vibrator;
     private File file;
     private String filePath;
+    private String BID;
+    private ArrayList<String> selectItem;
+    private ArrayList<String> reList;
+    private ArrayList<String> dataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +42,12 @@ public class PDFView extends AppCompatActivity {
 
         com.github.barteksc.pdfviewer.PDFView pdfView = findViewById(R.id.pdfView);
 
+        get_intent();
+
         String baseDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
         // SD卡位置getApplicationContext().getFilesDir().getAbsolutePath();
         // 系統位置android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-        String fileName = "JetecBLE" + ".pdf";
+        String fileName = "JetecLogData" + ".pdf";
         filePath = baseDir + File.separator + fileName;
         file = new File(filePath);
 
@@ -47,6 +55,22 @@ public class PDFView extends AppCompatActivity {
                 .enableAnnotationRendering(true)
                 .load();
 
+    }
+
+    private void get_intent(){
+        Intent intent = getIntent();
+
+        selectItem = new ArrayList<>();
+        reList = new ArrayList<>();
+        dataList = new ArrayList<>();
+        selectItem.clear();
+        reList.clear();
+        dataList.clear();
+
+        BID = intent.getStringExtra("BID");
+        selectItem = intent.getStringArrayListExtra("selectItem");
+        reList = intent.getStringArrayListExtra("reList");
+        dataList = intent.getStringArrayListExtra("dataList");
     }
 
     private void PDFshare(){
@@ -63,7 +87,6 @@ public class PDFView extends AppCompatActivity {
         assert printManager != null;
         printManager.print("JetecMonitor", myPrintAdapter, null);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -98,7 +121,11 @@ public class PDFView extends AppCompatActivity {
                 break;
             case KeyEvent.KEYCODE_BACK: {
                 vibrator.vibrate(100);
-                Intent intent = new Intent(PDFView.this, RecordActivity.class);
+                Intent intent = new Intent(PDFLogView.this, LogChartActivity.class);
+                intent.putExtra("BID", BID);
+                intent.putStringArrayListExtra("selectItem", selectItem);
+                intent.putStringArrayListExtra("reList", reList);
+                intent.putStringArrayListExtra("dataList", dataList);
                 startActivity(intent);
                 finish();
             }

@@ -3,6 +3,7 @@ package com.jetec.Monitor.SupportFunction;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jetec.Monitor.R;
+
+import java.util.Objects;
 
 public class Runningpdf {
 
@@ -39,6 +42,7 @@ public class Runningpdf {
     private Dialog showDialog(Context context, String message){
         Dialog progressDialog = new Dialog(context);
         progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Objects.requireNonNull(progressDialog.getWindow()).setBackgroundDrawable(new ColorDrawable());
 
         LayoutInflater inflater = LayoutInflater.from(context);
         @SuppressLint("InflateParams")

@@ -86,7 +86,7 @@ public class DeviceParse {
                         String power = String.valueOf(parase.byteToRealInt(parase.hex2Byte(getuuid.substring(getuuid.length() - 4))));
                         logMessage.showmessage(TAG, "temp = " + temp);
                         logMessage.showmessage(TAG, "power = " + power);
-                        list.add(power);
+                        list.add(power);    //電量
                         String type = getuuid.substring(2, 4);
                         if(type.matches("00")) {
                             String count = getuuid.substring(0, 2);
@@ -101,18 +101,26 @@ public class DeviceParse {
                                     String value;
                                     if (j == 0) {
                                         unit = getunit(getuuid.substring(j, j + 2));
+                                        logMessage.showmessage(TAG, "getuuid = " + getuuid.substring(j, j + 2));
                                         list.add(setflag(unit));
                                         num = getuuid.substring(j + 2, j + 4);
+                                        logMessage.showmessage(TAG, "num = " + getuuid.substring(j + 2, j + 4));
                                         value = tmpString.substring(k, k + 4);
+                                        logMessage.showmessage(TAG, "value = " + tmpString.substring(k, k + 4));
                                         overflow = tmpString.substring(k + 4, k + 8);
+                                        logMessage.showmessage(TAG, "overflow = " + tmpString.substring(k + 4, k + 8));
                                         k++;
                                     } else {
                                         unit = getunit(getuuid.substring(2 * j, 2 * j + 2));
+                                        logMessage.showmessage(TAG, "getuuid = " + getuuid.substring(2 * j, 2 * j + 2));
                                         //logMessage.showmessage(TAG,"unit = " + unit);
                                         list.add(setflag(unit));
                                         num = getuuid.substring(2 * j + 2, 2 * j + 4);
+                                        logMessage.showmessage(TAG, "num = " + getuuid.substring(2 * j + 2, 2 * j + 4));
                                         value = tmpString.substring(8 * k, 8 * k + 4);
+                                        logMessage.showmessage(TAG, "value = " + tmpString.substring(8 * k, 8 * k + 4));
                                         overflow = tmpString.substring(8 * k + 4, 8 * k + 8);
+                                        logMessage.showmessage(TAG, "overflow = " + tmpString.substring(8 * k + 4, 8 * k + 8));
                                         k++;
                                     }
                                     double p = Math.pow(10, Integer.valueOf(num));

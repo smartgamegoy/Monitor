@@ -368,6 +368,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                     mHandler.removeCallbacksAndMessages(null);
                     BID = Objects.requireNonNull(get_record.get(view_id)).get(1);
                     Value.device_name = Objects.requireNonNull(get_record.get(view_id)).get(0);
+                    Value.getviewlist = list;   //紀錄連線之裝備數據，後續供LOG圖表取單位
                     Remote_connec();
                     return true;
                 });
@@ -381,6 +382,7 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                     mHandler.removeCallbacksAndMessages(null);
                     BID = Objects.requireNonNull(get_record.get(view_id)).get(1);
                     Value.device_name = Objects.requireNonNull(get_record.get(view_id)).get(0);
+                    Value.getviewlist = list;   //紀錄連線之裝備數據，後續供LOG圖表取單位
                     Remote_connec();
                 });
                 linearLayout.addView(view);
@@ -656,7 +658,12 @@ public class FirstActivity extends AppCompatActivity implements NavigationView.O
                         else if(text.startsWith("COUNT") || text.startsWith("DATE") || text.startsWith("TIME") || text.startsWith("LOG")){
                             checkList.add(text);
                             if(text.startsWith("LOG")){
-                                Value.downlog = text.matches("LOGON");
+                                if(text.matches("LOGON")){
+                                    Value.downlog = true;
+                                }
+                                else {
+                                    Value.downlog = false;
+                                }
                             }
                             else if(text.startsWith("TIME")){
                                 Value.saveTime = text;
