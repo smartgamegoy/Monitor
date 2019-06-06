@@ -435,6 +435,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
 
     private void intentlogview() {
         Intent intent = new Intent(this, LogChartActivity.class);
+
         intent.putExtra("BID", BID);
         intent.putStringArrayListExtra("selectItem", selectItem);
         intent.putStringArrayListExtra("reList", reList);
@@ -603,7 +604,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                     .show();
         } else if (id == R.id.showdialog) {
             vibrator.vibrate(100);
-            if (saveLogSQL.getCount(Value.device) == 0) {
+            if (saveLogSQL.getCount(BID) == 0) {
                 Toast.makeText(DeviceFunction.this, getString(R.string.logdata), Toast.LENGTH_SHORT).show();
             } else {
                 requeststorage();
@@ -671,13 +672,13 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
     public void creatdialog() {
         JSONArray jsonArray = new JSONArray(Value.saveLoglIst);
         //Value.jsonLogdata = jsonArray;
-        saveLogSQL.insert(Value.device, jsonArray, Value.saveDate, Value.saveTime, Value.saveInter);
+        saveLogSQL.insert(BID, jsonArray, Value.saveDate, Value.saveTime, Value.saveInter);
     }
 
     @Override
     public void checkloglist() {    //此函式無意義僅測試SQL是否正常
         if (saveLogSQL.getCount(Value.device) != 0) {
-            saveList = saveLogSQL.getsaveLog(Value.device);
+            saveList = saveLogSQL.getsaveLog(BID);
             logMessage.showmessage(TAG, "saveList = " + saveList);
         }
     }

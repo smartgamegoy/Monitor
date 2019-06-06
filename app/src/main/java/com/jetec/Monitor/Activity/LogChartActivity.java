@@ -18,12 +18,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.os.Vibrator;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -86,7 +86,7 @@ public class LogChartActivity extends AppCompatActivity {
     private BluetoothLeService mBluetoothLeService;
     private boolean s_connect = false;
     private Intent intents;
-    private String BID, modelName;
+    private String BID;
     private ArrayList<String> selectItem;
     private ArrayList<String> reList;
     private ArrayList<String> dataList;
@@ -166,13 +166,12 @@ public class LogChartActivity extends AppCompatActivity {
         logMessage.showmessage(TAG, "dataList = " + dataList);
 
         dm = screen.size();
-        modelName = Value.model_name;
         makeList();
     }
 
     private void makeList() {
         try {
-            SQLList = saveLogSQL.getsaveLog(Value.device);    //time, date, list
+            SQLList = saveLogSQL.getsaveLog(BID);    //time, date, list
             saveTime = SQLList.get(0);
             saveDate = SQLList.get(1);
             saveInter = SQLList.get(2);
@@ -188,8 +187,6 @@ public class LogChartActivity extends AppCompatActivity {
                 }
                 valueList.add(newList);
             }
-            logMessage.showmessage(TAG, "valueList = " + valueList);
-            logMessage.showmessage(TAG, "valueList.size = " + valueList.size());
             maketimeList();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -221,6 +218,20 @@ public class LogChartActivity extends AppCompatActivity {
             chartdialog = Dialogview(this);
             chartdialog.show();
             chartdialog.setCanceledOnTouchOutside(false);
+        });
+
+        b2.setOnClickListener(v -> {
+            vibrator.vibrate(100);
+
+            Intent intent = new Intent(this, LogListActivity.class);
+            intent.putExtra("BID", BID);
+            intent.putStringArrayListExtra("selectItem", selectItem);
+            intent.putStringArrayListExtra("reList", reList);
+            intent.putStringArrayListExtra("dataList", dataList);
+            intent.putStringArrayListExtra("timeList", timeList);
+
+            startActivity(intent);
+            finish();
         });
 
         b3.setOnClickListener(v -> {
@@ -855,6 +866,18 @@ public class LogChartActivity extends AppCompatActivity {
         }
     };
 
+    private void backfunction(){
+        Intent intent = new Intent(LogChartActivity.this, DeviceFunction.class);
+
+        intent.putExtra("BID", BID);
+        intent.putStringArrayListExtra("selectItem", selectItem);
+        intent.putStringArrayListExtra("reList", reList);
+        intent.putStringArrayListExtra("dataList", dataList);
+
+        startActivity(intent);
+        finish();
+    }
+
     private void disconnect() {
         Intent intent = new Intent(this, StartActivity.class);
         startActivity(intent);
@@ -866,6 +889,23 @@ public class LogChartActivity extends AppCompatActivity {
             return;
         }
         mBluetoothLeService.disconnect();
+    }
+
+    public boolean onKeyDown(int key, KeyEvent event) {
+        switch (key) {
+            case KeyEvent.KEYCODE_SEARCH:
+                break;
+            case KeyEvent.KEYCODE_BACK: {
+                vibrator.vibrate(100);
+                backfunction();
+            }
+            break;
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                break;
+            default:
+                return false;
+        }
+        return false;
     }
 
     @Override
@@ -885,7 +925,7 @@ public class LogChartActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             vibrator.vibrate(100);
-            //Service_close();
+            Service_close();
             disconnect();
             return true;
         }
@@ -895,7 +935,7 @@ public class LogChartActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        /*logMessage.showmessage(TAG, "onDestroy()");
+        logMessage.showmessage(TAG, "onDestroy()");
         if (mBluetoothLeService != null) {
             if (s_connect) {
                 unbindService(mServiceConnection);
@@ -903,7 +943,7 @@ public class LogChartActivity extends AppCompatActivity {
             }
             mBluetoothLeService.stopSelf();
             mBluetoothLeService = null;
-        }*/
+        }
     }
 
     @Override
@@ -916,21 +956,21 @@ public class LogChartActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         logMessage.showmessage(TAG, "onResume");
-        /*logMessage.showmessage(TAG, "s_connect = " + s_connect);
+        logMessage.showmessage(TAG, "s_connect = " + s_connect);
 
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(BID);
             Log.d(TAG, "Connect request result=" + result);
-        }*/
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         logMessage.showmessage(TAG, "onPause");
-        /*if (s_connect)
-            unregisterReceiver(mGattUpdateReceiver);*/
+        if (s_connect)
+            unregisterReceiver(mGattUpdateReceiver);
     }
 
     @Override

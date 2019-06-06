@@ -17,13 +17,13 @@
     <string name="no_device">No device</string>
     <string name="app_bar">Device information</string>
     <string name="company">Jetec</string>
-    <string name="pressure">Pressure</string>
-    <string name="temperature">Temperature</string>
-    <string name="humidity">Humidity</string>
+    <string name="pressure">PRESS.</string>
+    <string name="temperature">Temp.</string>
+    <string name="humidity">RH</string>
     <string name="co">CO</string>
     <string name="co2">CO²</string>
     <string name="pm">PM2.5</string>
-    <string name="percent">Proportion</string>
+    <string name="percent">PR</string>
     <string name="connecting">Connecting</string>
     <string name="butoon_yes">OK</string>
     <string name="butoon_no">CANCEL</string>
@@ -144,4 +144,16 @@
     <string name="UL">upper limit</string>
     <string name="LL">lower limit</string>
     <string name="pdftime">Time</string>
+    <string name="datalog">Data List</string>
+    <string name="datetime">Date and Time</string>
+    <string name="size">Recode number</string>
+    <string name="screening">Data screening</string>
+    <string name="condition1">Item</string>
+    <string name="condition2">Delimit</string>
+    <string name="condition3">Value</string>
+    <string name="value_edit">Input a value</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="searching">Search</string>
+    <string name="timerange">Range</string>
 </resources>

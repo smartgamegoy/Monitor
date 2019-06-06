@@ -1,14 +1,12 @@
 package com.jetec.Monitor.SupportFunction;
 
 import android.content.Context;
-
 import com.jetec.Monitor.R;
 
 public class GetUnit {
 
     private String TAG = "GetUnit";
     private LogMessage logMessage = new LogMessage();
-
     public GetUnit() {
         super();
     }
@@ -87,6 +85,46 @@ public class GetUnit {
             unit = context.getString(R.string.pm);
         } else if (model.matches("15")) {
             unit = context.getString(R.string.percent);
+        }
+
+        return unit;
+    }
+
+    public String unit(String model) {
+        String unit = "N/A";
+
+        if (model.matches("0")) {
+            unit = "Mpa";
+        } else if (model.matches("1")) {
+            unit = "Kpa";
+        } else if (model.matches("2")) {
+            unit = "Pa";
+        } else if (model.matches("3")) {
+            unit = "Bar";
+        } else if (model.matches("4")) {
+            unit = "Mbar";
+        } else if (model.matches("5")) {
+            unit = "Kg/cm" + (char) (178);
+        } else if (model.matches("6")) {
+            unit = "psi";
+        } else if (model.matches("7")) {
+            unit = "mh" + (char) (178) + "O";
+        } else if (model.matches("8")) {
+            unit = "mmh" + (char) (178) + "O";
+        } else if (model.matches("9")) {
+            unit = "˚C";
+        } else if (model.matches("10")) {
+            unit = "˚F";
+        } else if (model.matches("11")) {
+            unit = "%";
+        } else if (model.matches("12")) {
+            unit = "ppm";
+        } else if (model.matches("13")) {
+            unit = "ppm";
+        } else if (model.matches("14")) {
+            unit = (char) (956) + "g/m" + (char) (179);
+        } else if (model.matches("15")) {
+            unit = "%";
         }
 
         return unit;

@@ -144,4 +144,16 @@
     <string name="UL">上限</string>
     <string name="LL">下限</string>
     <string name="pdftime">时间</string>
+    <string name="datalog">资料列表</string>
+    <string name="datetime">日期与时间</string>
+    <string name="size">记录编号</string>
+    <string name="screening">数据筛选</string>
+    <string name="condition1">項目</string>
+    <string name="condition2">條件</string>
+    <string name="condition3">数值</string>
+    <string name="value_edit">输入一个数值</string>
+    <string name="date">日期</string>
+    <string name="time">时间</string>
+    <string name="searching">搜索</string>
+    <string name="timerange">范围</string>
 </resources>

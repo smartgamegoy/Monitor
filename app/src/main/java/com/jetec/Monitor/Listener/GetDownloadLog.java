@@ -56,7 +56,6 @@ public class GetDownloadLog {
 
     public void getValue() {
         new Thread(saveData).start();
-        logMessage.showmessage(TAG, "不動?");
     }
 
     private Runnable saveData = new Runnable() {

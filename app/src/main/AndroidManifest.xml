@@ -89,6 +89,27 @@
             tools:ignore="InnerclassSeparator">
         </activity>
         <activity
+            android:name="com.jetec.Monitor.Activity.LogListActivity"
+            android:theme="@style/nordic_use"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
+            tools:ignore="InnerclassSeparator">
+        </activity>
+        <activity
+            android:name="com.jetec.Monitor.Activity.SearchLogDataActivity"
+            android:theme="@style/nordic_use"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
+            tools:ignore="InnerclassSeparator">
+        </activity>
+        <activity
+            android:name="com.jetec.Monitor.Activity.ShowSearchListActivity"
+            android:theme="@style/nordic_use"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
+            tools:ignore="InnerclassSeparator">
+        </activity>
+        <activity
             android:name="com.jetec.Monitor.Activity.PDFView"
             android:theme="@style/nordic_use"
             android:screenOrientation="user"
