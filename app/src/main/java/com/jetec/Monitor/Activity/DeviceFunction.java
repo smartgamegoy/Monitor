@@ -579,7 +579,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                     .setMessage(R.string.stoprecord)
                     .setPositiveButton(R.string.highspeed, (dialog, which) -> {
                         vibrator.vibrate(100);
-                        saveLogSQL.delete(Value.device);
+                        saveLogSQL.delete(BID);
                         Value.downlog = false;
                         Value.downloading = true;
                         navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
@@ -589,7 +589,7 @@ public class DeviceFunction extends AppCompatActivity implements NavigationView.
                     })
                     .setNegativeButton(R.string.stable, (dialog, which) -> {
                         vibrator.vibrate(100);
-                        saveLogSQL.delete(Value.device);
+                        saveLogSQL.delete(BID);
                         Value.downlog = false;
                         Value.downloading = true;
                         navigationView.getMenu().findItem(R.id.nav_share).setTitle(getString(R.string.start) + getString(R.string.LOG));
